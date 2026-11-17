@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TravelVault.App.ViewModels"
+             xmlns:s="clr-namespace:TravelVault.App.Resources.Strings"
+             x:Class="TravelVault.App.Views.ViewerPage"
+             x:DataType="vm:ViewerViewModel"
+             Title="{Binding Title}"
+             BackgroundColor="White">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="{x:Static s:AppResources.Viewer_Brightness}" Command="{Binding ToggleBarcodeCommand}" />
+    </ContentPage.ToolbarItems>
+    <Grid>
+        <CollectionView ItemsSource="{Binding Pages}">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="8" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="vm:PageImage">
+                    <Image Source="{Binding Source}" Aspect="AspectFit" />
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        <ScrollView IsVisible="{Binding Text, Converter={StaticResource NotEmpty}}" Padding="16">
+            <Label Text="{Binding Text}" TextColor="Black" FontSize="18" />
+        </ScrollView>
+        <VerticalStackLayout IsVisible="{Binding Missing}" VerticalOptions="Center" Padding="24" Spacing="16">
+            <Label Text="{x:Static s:AppResources.File_Requested}" TextColor="Black" HorizontalTextAlignment="Center" />
+            <Label Text="{x:Static s:AppResources.Viewer_MissingHelp}" TextColor="#3F4A4A" HorizontalTextAlignment="Center" FontSize="16" />
+            <Button Text="{x:Static s:AppResources.Common_TryAgain}" Command="{Binding RetryCommand}" />
+        </VerticalStackLayout>
+        <ActivityIndicator IsRunning="{Binding IsBusy}" Color="{StaticResource Primary}" VerticalOptions="Center" HorizontalOptions="Center" />
+    </Grid>
+</ContentPage>

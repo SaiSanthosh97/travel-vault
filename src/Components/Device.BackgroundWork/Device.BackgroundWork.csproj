@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Android periodic background work (JobScheduler, about every 15 minutes, survives restarts). Copied from Use It Before. -->
+    <TargetFrameworks>net10.0-android</TargetFrameworks>
+    <SupportedOSPlatformVersion>26</SupportedOSPlatformVersion>
+  </PropertyGroup>
+
+</Project>

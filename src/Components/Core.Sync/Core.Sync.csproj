@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Serverless family sync: signed + encrypted messages over a relay, last-writer-wins by hybrid clock,
+         chunked file transfer, invites/joins with approval, member removal with key rotation. -->
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core.Relay\Core.Relay.csproj" />
+    <ProjectReference Include="..\Core.Vault\Core.Vault.csproj" />
+  </ItemGroup>
+
+</Project>

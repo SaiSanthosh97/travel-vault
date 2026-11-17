@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TravelVault.App.ViewModels"
+             xmlns:s="clr-namespace:TravelVault.App.Resources.Strings"
+             x:Class="TravelVault.App.Views.JoinPage"
+             x:DataType="vm:JoinViewModel"
+             Title="{x:Static s:AppResources.Join_Title}">
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Padding="16,8,16,32" Spacing="12">
+                <VerticalStackLayout Spacing="12" IsVisible="{Binding Waiting, Converter={StaticResource Not}}">
+                    <Label Text="{x:Static s:AppResources.Join_InPersonTitle}" Style="{StaticResource SectionLabel}" />
+                    <Label Text="{x:Static s:AppResources.Join_InPersonHelp}" />
+                    <Button Text="{x:Static s:AppResources.Join_Scan}" Command="{Binding ScanCommand}" />
+                    <Label Text="{x:Static s:AppResources.Join_RemoteTitle}" Style="{StaticResource SectionLabel}" Margin="0,16,0,0" />
+                    <Label Text="{x:Static s:AppResources.Join_RemoteHelp}" />
+                    <Button Text="{x:Static s:AppResources.Join_Paste}" Command="{Binding PasteCommand}" Style="{StaticResource OutlineButton}" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="12" IsVisible="{Binding Waiting}">
+                    <Label Text="{Binding WaitingText}" />
+                    <Label Text="{x:Static s:AppResources.Join_ReadCode}" Style="{StaticResource Subtle}" />
+                    <Border Style="{StaticResource Card}" Padding="20">
+                        <Label Text="{Binding SafetyCode}" FontSize="40" FontFamily="OpenSansSemibold" HorizontalOptions="Center" CharacterSpacing="8" />
+                    </Border>
+                    <Button Text="{x:Static s:AppResources.Join_Check}" Command="{Binding CheckCommand}" />
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+        <Grid IsVisible="{Binding IsBusy}" BackgroundColor="#66000000">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" Color="White" VerticalOptions="Center" HorizontalOptions="Center" />
+        </Grid>
+    </Grid>
+</ContentPage>

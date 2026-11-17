@@ -1,0 +1,14 @@
+redBus
+Ticket Confirmed
+Ticket No: TS8K2M4N
+PNR: 5591XK
+Operator: SRS Travels
+Bus Type: A/C Sleeper (2+1)
+Boarding Point: Majestic, Bengaluru
+Dropping Point: Koyambedu, Chennai
+Journey Date: 18/01/2027
+Reporting Time: 21:30
+Departure Time: 22:00
+Seat No: L4
+Passenger: Mr Vikram Rao, Male, 41
+Synthetic sample.

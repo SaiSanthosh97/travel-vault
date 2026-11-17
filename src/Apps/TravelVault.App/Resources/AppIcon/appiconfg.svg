@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Suitcase with a ticket stub: "your travel documents, safe". Inside the adaptive-icon safe zone. -->
+<svg width="456" height="456" viewBox="0 0 456 456" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(128 118)">
+    <path d="M70 0 H130 a14 14 0 0 1 14 14 V40 H180 a20 20 0 0 1 20 20 V200 a20 20 0 0 1 -20 20 H20 a20 20 0 0 1 -20 -20 V60 a20 20 0 0 1 20 -20 H56 V14 a14 14 0 0 1 14 -14 Z M74 18 V40 H126 V18 Z" fill="#FFFFFF" fill-rule="evenodd"/>
+    <rect x="44" y="84" width="112" height="70" rx="10" fill="#00696B"/>
+    <circle cx="72" cy="119" r="10" fill="#FFFFFF"/>
+    <rect x="92" y="106" width="48" height="8" rx="4" fill="#FFFFFF"/>
+    <rect x="92" y="124" width="34" height="8" rx="4" fill="#FFFFFF"/>
+  </g>
+</svg>

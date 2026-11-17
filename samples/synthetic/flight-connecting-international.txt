@@ -1,0 +1,15 @@
+EMIRATES
+ELECTRONIC TICKET ITINERARY RECEIPT
+
+Booking Reference (PNR): QWE7RT
+Ticket Number: 1762412345678
+
+Passenger Name: SHARMA/ANANYA MS
+
+FLIGHT   FROM                      TO                         DEPART             ARRIVE
+EK 569   BLR Bengaluru T2          DXB Dubai T3               15Jan2027 04:25    15Jan2027 07:05
+EK 007   DXB Dubai T3              LHR London Heathrow T3     15Jan2027 09:10    15Jan2027 13:20
+
+Class: Economy
+Baggage allowance: 2 pieces
+Synthetic sample for testing only.

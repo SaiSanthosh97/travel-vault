@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- On-device text recognition and barcode scanning (Google ML Kit) and PDF page rendering (Android PdfRenderer).
+         Implements Core.Parsing's ITextRecognizer, IBarcodeScanner and IPdfRasterizer. Adapted from Use It Before. -->
+    <TargetFrameworks>net10.0-android</TargetFrameworks>
+    <SupportedOSPlatformVersion>26</SupportedOSPlatformVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Xamarin.Google.MLKit.BarcodeScanning" />
+    <PackageReference Include="Xamarin.Google.MLKit.TextRecognition" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core.Parsing\Core.Parsing.csproj" />
+  </ItemGroup>
+
+</Project>

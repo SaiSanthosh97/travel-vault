@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="../../src/Components/Core.AppUpdater/Core.AppUpdater.csproj" />
+  </ItemGroup>
+
+</Project>

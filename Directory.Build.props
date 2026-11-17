@@ -1,0 +1,25 @@
+<Project>
+  <!-- Shared settings for every project (same model as Use It Before). -->
+  <PropertyGroup>
+    <RootNamespace>TravelVault.$(MSBuildProjectName)</RootNamespace>
+    <AssemblyName>TravelVault.$(MSBuildProjectName)</AssemblyName>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Authors>SaiSanthosh97</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <!-- Local Android builds: use the standard SDK/JDK locations when not given on the command line (CI passes its own). -->
+  <PropertyGroup>
+    <AndroidSdkDirectory Condition="'$(AndroidSdkDirectory)' == '' and Exists('$(LOCALAPPDATA)\Android\Sdk')">$(LOCALAPPDATA)\Android\Sdk</AndroidSdkDirectory>
+    <JavaSdkDirectory Condition="'$(JavaSdkDirectory)' == '' and '$(JAVA_HOME)' != ''">$(JAVA_HOME)</JavaSdkDirectory>
+  </PropertyGroup>
+
+  <!-- Test projects can see internal members of the component they test. -->
+  <ItemGroup Condition="!$(MSBuildProjectName.EndsWith('.Tests')) and !$(MSBuildProjectName.EndsWith('.App'))">
+    <InternalsVisibleTo Include="TravelVault.$(MSBuildProjectName).Tests" />
+  </ItemGroup>
+</Project>

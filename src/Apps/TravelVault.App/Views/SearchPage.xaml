@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:VaultPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:TravelVault.App.Views"
+             xmlns:vm="clr-namespace:TravelVault.App.ViewModels"
+             xmlns:svc="clr-namespace:TravelVault.App.Services"
+             xmlns:s="clr-namespace:TravelVault.App.Resources.Strings"
+             x:Class="TravelVault.App.Views.SearchPage"
+             x:DataType="vm:SearchViewModel"
+             Title="{x:Static s:AppResources.Tab_Search}">
+    <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="16,8,16,0">
+        <SearchBar Text="{Binding Query}" Placeholder="{x:Static s:AppResources.Search_Placeholder}" FontSize="18" />
+        <ScrollView Grid.Row="1" Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="0,8,0,0">
+            <HorizontalStackLayout BindableLayout.ItemsSource="{Binding Filters}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:FilterChip">
+                        <Border Style="{StaticResource Chip}">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding Selected}" Value="True">
+                                    <Setter Property="Stroke" Value="{StaticResource Primary}" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding FilterCommand, Source={RelativeSource AncestorType={x:Type vm:SearchViewModel}}, x:DataType=vm:SearchViewModel}" CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+                            <Label Text="{Binding Label}" FontSize="16" />
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </HorizontalStackLayout>
+        </ScrollView>
+        <Label Grid.Row="2" Text="{Binding Summary}" Style="{StaticResource Subtle}" Margin="0,4,0,8" />
+        <CollectionView Grid.Row="3" ItemsSource="{Binding Results}">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="8" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="svc:DocumentRow">
+                    <views:DocumentRowView Row="{Binding .}" Command="{Binding OpenCommand, Source={RelativeSource AncestorType={x:Type vm:SearchViewModel}}, x:DataType=vm:SearchViewModel}" />
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</views:VaultPage>

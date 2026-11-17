@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="../../src/Components/Core.Backup/Core.Backup.csproj" />
+    <ProjectReference Include="../../src/Components/Storage.Sqlite/Storage.Sqlite.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../samples/synthetic/*.txt" LinkBase="samples" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

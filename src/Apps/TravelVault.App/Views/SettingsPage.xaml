@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:VaultPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:TravelVault.App.Views"
+             xmlns:vm="clr-namespace:TravelVault.App.ViewModels"
+             xmlns:s="clr-namespace:TravelVault.App.Resources.Strings"
+             x:Class="TravelVault.App.Views.SettingsPage"
+             x:DataType="vm:SettingsViewModel"
+             Title="{x:Static s:AppResources.Tab_Settings}">
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Padding="16,8,16,32" Spacing="8">
+
+                <Label Text="{x:Static s:AppResources.Settings_YourName}" Style="{StaticResource SectionLabel}" />
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Text="{Binding YourName}" VerticalOptions="Center" />
+                    <Button Grid.Column="1" Text="{x:Static s:AppResources.Common_Change}" Style="{StaticResource LinkButton}" Command="{Binding RenameCommand}" />
+                </Grid>
+
+                <!-- Security -->
+                <Label Text="{x:Static s:AppResources.Settings_Security}" Style="{StaticResource SectionLabel}" />
+                <Grid ColumnDefinitions="*,Auto">
+                    <VerticalStackLayout VerticalOptions="Center">
+                        <Label Text="{x:Static s:AppResources.Settings_AppLock}" />
+                        <Label Text="{x:Static s:AppResources.Settings_AppLockHelp}" Style="{StaticResource Subtle}" />
+                    </VerticalStackLayout>
+                    <Switch Grid.Column="1" IsToggled="{Binding AppLock}" />
+                </Grid>
+                <Label Text="{x:Static s:AppResources.Settings_NoScreenLock}" TextColor="{StaticResource Danger}" IsVisible="{Binding NoScreenLock}" />
+                <Label Text="{x:Static s:AppResources.Settings_LockAfter}" Style="{StaticResource Subtle}" />
+                <Picker ItemsSource="{Binding LockTimeNames}" SelectedIndex="{Binding LockTimeIndex}" />
+                <Grid ColumnDefinitions="*,Auto">
+                    <VerticalStackLayout VerticalOptions="Center">
+                        <Label Text="{x:Static s:AppResources.Settings_Strict}" />
+                        <Label Text="{x:Static s:AppResources.Settings_StrictHelp}" Style="{StaticResource Subtle}" />
+                    </VerticalStackLayout>
+                    <Switch Grid.Column="1" IsToggled="{Binding StrictMode}" />
+                </Grid>
+                <Label Text="{Binding KeyText}" Style="{StaticResource Subtle}" />
+
+                <!-- Reminders -->
+                <Label Text="{x:Static s:AppResources.Settings_Reminders}" Style="{StaticResource SectionLabel}" />
+                <Grid ColumnDefinitions="*,Auto">
+                    <VerticalStackLayout VerticalOptions="Center">
+                        <Label Text="{x:Static s:AppResources.Settings_AllFamily}" />
+                        <Label Text="{x:Static s:AppResources.Settings_AllFamilyHelp}" Style="{StaticResource Subtle}" />
+                    </VerticalStackLayout>
+                    <Switch Grid.Column="1" IsToggled="{Binding AllFamilyReminders}" />
+                </Grid>
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Text="{Binding ReminderStatus}" VerticalOptions="Center" />
+                    <Button Grid.Column="1" Text="{x:Static s:AppResources.Settings_Fix}" Style="{StaticResource LinkButton}" Command="{Binding FixRemindersCommand}" />
+                </Grid>
+
+                <!-- Backup -->
+                <Label Text="{x:Static s:AppResources.Settings_Backup}" Style="{StaticResource SectionLabel}" />
+                <Label Text="{Binding BackupStatus}" />
+                <Label Text="{x:Static s:AppResources.Settings_BackupHelp}" Style="{StaticResource Subtle}" />
+                <Button Text="{x:Static s:AppResources.Settings_BackupDownloads}" Command="{Binding BackupToDownloadsCommand}" />
+                <Button Text="{x:Static s:AppResources.Settings_BackupShare}" Command="{Binding ShareBackupCommand}" Style="{StaticResource OutlineButton}" />
+                <Button Text="{x:Static s:AppResources.Settings_ShowCode}" Command="{Binding ShowRecoveryCodeCommand}" Style="{StaticResource OutlineButton}" />
+                <Button Text="{x:Static s:AppResources.Settings_Restore}" Command="{Binding RestoreCommand}" Style="{StaticResource OutlineButton}" />
+
+                <!-- Vault -->
+                <Label Text="{x:Static s:AppResources.Settings_Vault}" Style="{StaticResource SectionLabel}" />
+                <Label Text="{Binding StorageText}" />
+                <Button Text="{x:Static s:AppResources.Family_Travelers}" Command="{Binding TravelersCommand}" Style="{StaticResource OutlineButton}" />
+                <Button Text="{x:Static s:AppResources.Deleted_Title}" Command="{Binding RecentlyDeletedCommand}" Style="{StaticResource OutlineButton}" />
+
+                <!-- App -->
+                <Label Text="{x:Static s:AppResources.Settings_App}" Style="{StaticResource SectionLabel}" />
+                <Label Text="{Binding VersionText}" Style="{StaticResource Subtle}" />
+                <Button Text="{x:Static s:AppResources.Settings_CheckUpdates}" Command="{Binding CheckUpdatesCommand}" Style="{StaticResource OutlineButton}" />
+                <Button Text="{x:Static s:AppResources.Settings_About}" Command="{Binding AboutCommand}" Style="{StaticResource OutlineButton}" />
+                <Button Text="{x:Static s:AppResources.Settings_EraseTitle}" Command="{Binding EraseCommand}" Style="{StaticResource DangerButton}" Margin="0,16,0,0" />
+            </VerticalStackLayout>
+        </ScrollView>
+        <Grid IsVisible="{Binding IsBusy}" BackgroundColor="#66000000">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" Color="White" VerticalOptions="Center" HorizontalOptions="Center" />
+        </Grid>
+    </Grid>
+</views:VaultPage>

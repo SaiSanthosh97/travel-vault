@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:VaultPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:TravelVault.App.Views"
+             xmlns:vm="clr-namespace:TravelVault.App.ViewModels"
+             xmlns:svc="clr-namespace:TravelVault.App.Services"
+             xmlns:s="clr-namespace:TravelVault.App.Resources.Strings"
+             x:Class="TravelVault.App.Views.DocumentPage"
+             x:DataType="vm:DocumentViewModel"
+             Title="{Binding Title}">
+    <ScrollView>
+        <VerticalStackLayout Padding="16,8,16,32" Spacing="12">
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                <Label Text="{Binding Icon}" FontSize="40" VerticalOptions="Center" />
+                <VerticalStackLayout Grid.Column="1">
+                    <Label Text="{Binding Title}" Style="{StaticResource Heading}" />
+                    <Label Text="{Binding TypeText}" Style="{StaticResource Subtle}" />
+                </VerticalStackLayout>
+            </Grid>
+
+            <Label Text="{Binding Warning}" TextColor="{StaticResource Warning}" IsVisible="{Binding Warning, Converter={StaticResource NotEmpty}}" />
+
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                <Button Text="{x:Static s:AppResources.Document_View}" Command="{Binding ViewCommand}" />
+                <Button Grid.Column="1" Text="{x:Static s:AppResources.Document_Barcode}" Command="{Binding BarcodeCommand}" Style="{StaticResource OutlineButton}" IsVisible="{Binding CanShowBarcode}" />
+            </Grid>
+
+            <!-- Possible duplicate -->
+            <Border Style="{StaticResource Card}" Padding="14" IsVisible="{Binding HasDuplicate}">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="{Binding DuplicateText}" />
+                    <Button Text="{x:Static s:AppResources.Document_Merge}" Command="{Binding MergeCommand}" Style="{StaticResource OutlineButton}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Legs / stay / event -->
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Segments}" Spacing="8">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:SegmentRow">
+                        <Border Style="{StaticResource Card}" Padding="14,10">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="{Binding Route}" FontFamily="OpenSansSemibold" FontSize="20" />
+                                <Label Text="{Binding Departs}" />
+                                <Label Text="{Binding Arrives}" Style="{StaticResource Subtle}" />
+                                <Label Text="{Binding Details}" Style="{StaticResource Subtle}" />
+                                <Label Text="{Binding Missing}" TextColor="{StaticResource Warning}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+
+            <!-- Details -->
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Fields}" Spacing="4">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:FieldRow">
+                        <Grid ColumnDefinitions="2*,3*">
+                            <Label Text="{Binding Label}" Style="{StaticResource Subtle}" />
+                            <Label Grid.Column="1" Text="{Binding Value}" FontFamily="OpenSansSemibold">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding Check}" Value="True">
+                                        <Setter Property="TextColor" Value="{StaticResource Warning}" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </Grid>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+
+            <!-- Travelers -->
+            <Label Text="{x:Static s:AppResources.Document_Travelers}" Style="{StaticResource SectionLabel}" />
+            <Grid ColumnDefinitions="*,Auto">
+                <Label Text="{Binding TravelersText}" VerticalOptions="Center" />
+                <Button Grid.Column="1" Text="{x:Static s:AppResources.Common_Change}" Style="{StaticResource LinkButton}" Command="{Binding TravelersCommand}" />
+            </Grid>
+
+            <!-- Boarding passes linked to this ticket -->
+            <Label Text="{x:Static s:AppResources.Document_BoardingPasses}" Style="{StaticResource SectionLabel}" IsVisible="{Binding BoardingPasses.Count, Converter={StaticResource Any}}" />
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding BoardingPasses}" Spacing="8">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="svc:DocumentRow">
+                        <views:DocumentRowView Row="{Binding .}" Command="{Binding OpenPassCommand, Source={RelativeSource AncestorType={x:Type vm:DocumentViewModel}}, x:DataType=vm:DocumentViewModel}" />
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+
+            <!-- Trip -->
+            <Label Text="{x:Static s:AppResources.Document_TripTitle}" Style="{StaticResource SectionLabel}" />
+            <Grid ColumnDefinitions="*,Auto">
+                <Label Text="{Binding TripText}" VerticalOptions="Center" />
+                <Button Grid.Column="1" Text="{x:Static s:AppResources.Common_Change}" Style="{StaticResource LinkButton}" Command="{Binding TripCommand}" />
+            </Grid>
+
+            <!-- Files (versions) -->
+            <Label Text="{x:Static s:AppResources.Document_Files}" Style="{StaticResource SectionLabel}" />
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Files}" Spacing="6">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:FileRow">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="{Binding Text}" Style="{StaticResource Subtle}" VerticalOptions="Center">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding OpenFileCommand, Source={RelativeSource AncestorType={x:Type vm:DocumentViewModel}}, x:DataType=vm:DocumentViewModel}" CommandParameter="{Binding .}" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                            <Button Grid.Column="1" Text="{x:Static s:AppResources.Document_MakePrimary}" Style="{StaticResource LinkButton}"
+                                    Command="{Binding MakePrimaryCommand, Source={RelativeSource AncestorType={x:Type vm:DocumentViewModel}}, x:DataType=vm:DocumentViewModel}" CommandParameter="{Binding .}"
+                                    IsVisible="{Binding IsPrimary, Converter={StaticResource Not}}" />
+                        </Grid>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+
+            <!-- Actions -->
+            <Button Text="{x:Static s:AppResources.Document_Edit}" Command="{Binding EditCommand}" Style="{StaticResource OutlineButton}" Margin="0,12,0,0" />
+            <Button Text="{x:Static s:AppResources.Document_Share}" Command="{Binding ShareCommand}" Style="{StaticResource OutlineButton}" />
+            <Button Text="{x:Static s:AppResources.Document_Save}" Command="{Binding SaveCommand}" Style="{StaticResource OutlineButton}" />
+            <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding CanMakePrivate}">
+                <VerticalStackLayout VerticalOptions="Center">
+                    <Label Text="{x:Static s:AppResources.Document_Private}" />
+                    <Label Text="{x:Static s:AppResources.Document_PrivateHelp}" Style="{StaticResource Subtle}" />
+                </VerticalStackLayout>
+                <Button Grid.Column="1" Text="{x:Static s:AppResources.Common_Change}" Style="{StaticResource LinkButton}" Command="{Binding TogglePrivateCommand}" />
+            </Grid>
+            <Label Text="{x:Static s:AppResources.Document_IsPrivate}" Style="{StaticResource Subtle}" IsVisible="{Binding IsPrivate}" />
+            <Button Text="{x:Static s:AppResources.Common_Delete}" Command="{Binding DeleteCommand}" Style="{StaticResource DangerButton}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</views:VaultPage>

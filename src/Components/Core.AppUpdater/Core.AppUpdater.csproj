@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Checks the GitHub repository's latest release for a newer APK and downloads it, verified against the
+         SHA-256 GitHub publishes. Copied from Use It Before (D46). -->
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+</Project>

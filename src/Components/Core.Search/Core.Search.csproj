@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Global search: what goes into the index for a document, and turning what the user types into a safe query. -->
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core.Documents\Core.Documents.csproj" />
+    <ProjectReference Include="..\Core.Parsing\Core.Parsing.csproj" />
+    <ProjectReference Include="..\Core.Travelers\Core.Travelers.csproj" />
+  </ItemGroup>
+
+</Project>

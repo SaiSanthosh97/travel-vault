@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Multi-phone sync tests: several complete vaults talking through an in-memory relay that expires messages like ntfy.sh. -->
+  <ItemGroup>
+    <ProjectReference Include="../../src/Components/Core.Sync/Core.Sync.csproj" />
+    <ProjectReference Include="../../src/Components/Storage.Sqlite/Storage.Sqlite.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../samples/synthetic/*.txt" LinkBase="samples" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

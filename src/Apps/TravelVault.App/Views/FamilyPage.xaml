@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:VaultPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:TravelVault.App.Views"
+             xmlns:vm="clr-namespace:TravelVault.App.ViewModels"
+             xmlns:s="clr-namespace:TravelVault.App.Resources.Strings"
+             x:Class="TravelVault.App.Views.FamilyPage"
+             x:DataType="vm:FamilyViewModel"
+             Title="{x:Static s:AppResources.Tab_Family}">
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Padding="16,8,16,32" Spacing="12">
+
+                <VerticalStackLayout IsVisible="{Binding HasFamily}" Spacing="12">
+                    <Border Style="{StaticResource Card}" Padding="16">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding FamilyName}" Style="{StaticResource Heading}" FontSize="26" />
+                            <Label Text="{Binding Status}" Style="{StaticResource Subtle}" />
+                            <HorizontalStackLayout Spacing="8">
+                                <Button Text="{x:Static s:AppResources.Family_SyncNow}" Command="{Binding SyncNowCommand}" Style="{StaticResource LinkButton}" />
+                                <Button Text="{x:Static s:AppResources.Family_Rename}" Command="{Binding RenameCommand}" Style="{StaticResource LinkButton}" IsVisible="{Binding IsAdmin}" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Join requests waiting for approval -->
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Pending}" Spacing="8">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:PendingJoinRow">
+                                <Border Style="{StaticResource Card}" Padding="14" Stroke="{StaticResource Warning}">
+                                    <VerticalStackLayout Spacing="6">
+                                        <Label Text="{Binding Name, StringFormat={x:Static s:AppResources.Family_WantsToJoin}}" FontFamily="OpenSansSemibold" />
+                                        <Label Text="{x:Static s:AppResources.Family_CompareCode}" Style="{StaticResource Subtle}" />
+                                        <Label Text="{Binding SafetyCode}" FontSize="32" FontFamily="OpenSansSemibold" HorizontalOptions="Center" CharacterSpacing="6" />
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Button Text="{x:Static s:AppResources.Family_Approve}" Command="{Binding ApproveCommand, Source={RelativeSource AncestorType={x:Type vm:FamilyViewModel}}, x:DataType=vm:FamilyViewModel}" CommandParameter="{Binding .}" />
+                                            <Button Grid.Column="1" Text="{x:Static s:AppResources.Family_Reject}" Style="{StaticResource DangerButton}"
+                                                    Command="{Binding RejectCommand, Source={RelativeSource AncestorType={x:Type vm:FamilyViewModel}}, x:DataType=vm:FamilyViewModel}" CommandParameter="{Binding .}" />
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                    <!-- Invite -->
+                    <VerticalStackLayout IsVisible="{Binding IsAdmin}" Spacing="8">
+                        <Label Text="{x:Static s:AppResources.Family_InviteTitle}" Style="{StaticResource SectionLabel}" />
+                        <Label Text="{x:Static s:AppResources.Family_InviteHelp}" Style="{StaticResource Subtle}" />
+                        <Button Text="{x:Static s:AppResources.Family_InviteQr}" Command="{Binding InviteInPersonCommand}" />
+                        <Button Text="{x:Static s:AppResources.Family_InviteMessage}" Command="{Binding InviteByMessageCommand}" Style="{StaticResource OutlineButton}" />
+                        <Border IsVisible="{Binding ShowQr}" BackgroundColor="White" StrokeThickness="0" StrokeShape="RoundRectangle 14" Padding="12" HorizontalOptions="Center">
+                            <VerticalStackLayout Spacing="6">
+                                <Image Source="{Binding InviteQr}" WidthRequest="260" HeightRequest="260" />
+                                <Label Text="{Binding QrExpiry}" TextColor="Black" FontSize="15" HorizontalOptions="Center" />
+                                <Button Text="{x:Static s:AppResources.Common_Done}" Command="{Binding HideQrCommand}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- Members -->
+                    <Label Text="{x:Static s:AppResources.Family_Members}" Style="{StaticResource SectionLabel}" />
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Members}" Spacing="8">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:MemberRow">
+                                <Border Style="{StaticResource Card}" Padding="14,10">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <VerticalStackLayout>
+                                            <Label Text="{Binding Name}" FontFamily="OpenSansSemibold" />
+                                            <Label Text="{Binding Detail}" Style="{StaticResource Subtle}" />
+                                        </VerticalStackLayout>
+                                        <HorizontalStackLayout Grid.Column="1" IsVisible="{Binding CanRemove}">
+                                            <Button Text="{x:Static s:AppResources.Family_MakeAdminShort}" Style="{StaticResource LinkButton}"
+                                                    Command="{Binding MakeAdminCommand, Source={RelativeSource AncestorType={x:Type vm:FamilyViewModel}}, x:DataType=vm:FamilyViewModel}" CommandParameter="{Binding .}" />
+                                            <Button Text="{x:Static s:AppResources.Family_Remove}" Style="{StaticResource LinkButton}" TextColor="{StaticResource Danger}"
+                                                    Command="{Binding RemoveCommand, Source={RelativeSource AncestorType={x:Type vm:FamilyViewModel}}, x:DataType=vm:FamilyViewModel}" CommandParameter="{Binding .}" />
+                                        </HorizontalStackLayout>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                    <Button Text="{x:Static s:AppResources.Family_Travelers}" Command="{Binding TravelersCommand}" Style="{StaticResource OutlineButton}" />
+                    <Label Text="{x:Static s:AppResources.Family_Privacy}" Style="{StaticResource Subtle}" />
+                </VerticalStackLayout>
+
+                <Label Text="{x:Static s:AppResources.Family_Other}" Style="{StaticResource SectionLabel}" />
+                <Button Text="{x:Static s:AppResources.Family_Join}" Command="{Binding JoinCommand}" Style="{StaticResource OutlineButton}" />
+                <Button Text="{x:Static s:AppResources.Family_Create}" Command="{Binding CreateAnotherCommand}" Style="{StaticResource OutlineButton}" />
+                <Button Text="{x:Static s:AppResources.Family_Leave}" Command="{Binding LeaveCommand}" Style="{StaticResource DangerButton}" IsVisible="{Binding HasFamily}" />
+            </VerticalStackLayout>
+        </ScrollView>
+        <Grid IsVisible="{Binding IsBusy}" BackgroundColor="#66000000">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" Color="White" VerticalOptions="Center" HorizontalOptions="Center" />
+        </Grid>
+    </Grid>
+</views:VaultPage>

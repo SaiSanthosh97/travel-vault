@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Reads travel documents without AI: barcodes (IATA BCBP), passport/visa MRZ, PDF text, OCR text + rules. -->
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Data\airports.tsv" LogicalName="airports.tsv" />
+    <EmbeddedResource Include="Data\airlines.tsv" LogicalName="airlines.tsv" />
+    <EmbeddedResource Include="Data\city-aliases.tsv" LogicalName="city-aliases.tsv" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PdfPig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core.Common\Core.Common.csproj" />
+    <ProjectReference Include="..\Core.Documents\Core.Documents.csproj" />
+  </ItemGroup>
+
+</Project>

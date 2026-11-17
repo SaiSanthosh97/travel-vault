@@ -1,0 +1,16 @@
+Electronic Reservation Slip (ERS)
+Indian Railways - IRCTC
+
+PNR No: 4521378965
+Train No./Name: 12627 / KARNATAKA EXP
+Date of Journey: 20-Dec-2026
+Booked From: KSR BENGALURU (SBC)
+Boarding At: KSR BENGALURU (SBC)    Departure: 19:20 20-Dec-2026
+To: NEW DELHI (NDLS)    Arrival: 08:45 22-Dec-2026
+Class: AC 3 TIER (3A)
+Coach: B4   Berth: 32
+
+Passenger Details
+1. RAHUL SHARMA   34  M   CNF/B4/32
+2. PRIYA SHARMA   32  F   CNF/B4/33
+Synthetic sample for testing.

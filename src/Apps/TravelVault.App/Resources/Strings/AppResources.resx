@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- All user-facing text (D27). Translations go in AppResources.<language>.resx with the same keys. -->
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="AppName" xml:space="preserve"><value>Travel Vault</value></data>
+  <data name="Tab_Home" xml:space="preserve"><value>Home</value></data>
+  <data name="Tab_Trips" xml:space="preserve"><value>Trips</value></data>
+  <data name="Tab_Search" xml:space="preserve"><value>Search</value></data>
+  <data name="Tab_Family" xml:space="preserve"><value>Family</value></data>
+  <data name="Tab_Settings" xml:space="preserve"><value>Settings</value></data>
+  <data name="Common_OK" xml:space="preserve"><value>OK</value></data>
+  <data name="Common_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Common_Change" xml:space="preserve"><value>Change</value></data>
+  <data name="Common_Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Common_Done" xml:space="preserve"><value>Done</value></data>
+  <data name="Common_NotNow" xml:space="preserve"><value>Not now</value></data>
+  <data name="Common_Save" xml:space="preserve"><value>Save</value></data>
+  <data name="Common_TryAgain" xml:space="preserve"><value>Try again</value></data>
+  <data name="Add_Title" xml:space="preserve"><value>Add a document</value></data>
+  <data name="Add_Camera" xml:space="preserve"><value>Take a photo of a ticket</value></data>
+  <data name="Add_Photo" xml:space="preserve"><value>Choose a photo or screenshot</value></data>
+  <data name="Add_File" xml:space="preserve"><value>Choose a file (PDF, image)</value></data>
+  <data name="Add_Paste" xml:space="preserve"><value>Paste copied text (SMS, email)</value></data>
+  <data name="Add_ClipboardEmpty" xml:space="preserve"><value>Nothing has been copied yet. Copy the booking text (for example from an SMS or email) and try again.</value></data>
+  <data name="Add_NoPermission" xml:space="preserve"><value>Travel Vault needs permission to use the camera. You can allow it in Android Settings → Apps → Travel Vault.</value></data>
+  <data name="Badge_Check" xml:space="preserve"><value>Please check</value></data>
+  <data name="Badge_Expired" xml:space="preserve"><value>Expired</value></data>
+  <data name="Badge_ExpiresIn" xml:space="preserve"><value>Expires in {0} days</value></data>
+  <data name="Type_Flight" xml:space="preserve"><value>Flight</value></data>
+  <data name="Type_BoardingPass" xml:space="preserve"><value>Boarding pass</value></data>
+  <data name="Type_Train" xml:space="preserve"><value>Train</value></data>
+  <data name="Type_Bus" xml:space="preserve"><value>Bus</value></data>
+  <data name="Type_Hotel" xml:space="preserve"><value>Hotel</value></data>
+  <data name="Type_Event" xml:space="preserve"><value>Event</value></data>
+  <data name="Type_Visa" xml:space="preserve"><value>Visa</value></data>
+  <data name="Type_Passport" xml:space="preserve"><value>Passport / ID</value></data>
+  <data name="Type_Other" xml:space="preserve"><value>Other</value></data>
+  <data name="Time_JustNow" xml:space="preserve"><value>just now</value></data>
+  <data name="Time_MinutesAgo" xml:space="preserve"><value>{0} min ago</value></data>
+  <data name="Time_HoursAgo" xml:space="preserve"><value>{0} h ago</value></data>
+  <data name="Time_DaysAgo" xml:space="preserve"><value>{0} days ago</value></data>
+  <data name="Sync_Last" xml:space="preserve"><value>Synced with family {0}</value></data>
+  <data name="Sync_Never" xml:space="preserve"><value>Not synced with family yet</value></data>
+  <data name="Sync_Waiting" xml:space="preserve"><value>{0} changes waiting to be sent (no internet?)</value></data>
+  <data name="Sync_Failed" xml:space="preserve"><value>Couldn&apos;t reach the family relay. Your changes are kept and sent later.</value></data>
+  <data name="Sync_Done" xml:space="preserve"><value>Up to date ({0} new)</value></data>
+  <data name="Welcome_Title" xml:space="preserve"><value>Welcome</value></data>
+  <data name="Welcome_Pitch" xml:space="preserve"><value>All your family&apos;s tickets, boarding passes and bookings in one place — on your phone, offline, and private. No account. Free.</value></data>
+  <data name="Welcome_YourName" xml:space="preserve"><value>Your name</value></data>
+  <data name="Welcome_NamePlaceholder" xml:space="preserve"><value>e.g. Priya</value></data>
+  <data name="Welcome_NameHelp" xml:space="preserve"><value>Family members see this name. It stays on your phone and your family&apos;s phones only.</value></data>
+  <data name="Welcome_NameNeeded" xml:space="preserve"><value>Please enter your name.</value></data>
+  <data name="Welcome_Start" xml:space="preserve"><value>Get started</value></data>
+  <data name="Welcome_NewPhone" xml:space="preserve"><value>New phone?</value></data>
+  <data name="Welcome_Restore" xml:space="preserve"><value>Restore from a backup</value></data>
+  <data name="Welcome_Privacy" xml:space="preserve"><value>Everything is encrypted on this phone. Family sync is end-to-end encrypted; nobody else can read your documents.</value></data>
+  <data name="Welcome_KeyLost" xml:space="preserve"><value>This phone&apos;s security key is gone (for example after a reset), so the old data can&apos;t be opened. Restore a backup, or start over.</value></data>
+  <data name="Welcome_StartOverTitle" xml:space="preserve"><value>Start over?</value></data>
+  <data name="Welcome_StartOverText" xml:space="preserve"><value>The unreadable old data on this phone will be deleted. If you&apos;re in a family, you can rejoin and get everything back from the other phones.</value></data>
+  <data name="Welcome_StartOver" xml:space="preserve"><value>Start over</value></data>
+  <data name="Recovery_Title" xml:space="preserve"><value>Your recovery code</value></data>
+  <data name="Recovery_Intro" xml:space="preserve"><value>Write this code on paper and keep it somewhere safe. It&apos;s the only way to open your backup on a new phone.</value></data>
+  <data name="Recovery_Keep" xml:space="preserve"><value>Don&apos;t share it or keep a photo of it. You can see it again in Settings after unlocking the app.</value></data>
+  <data name="Recovery_WrittenDown" xml:space="preserve"><value>I&apos;ve written it down</value></data>
+  <data name="Recovery_Confirm" xml:space="preserve"><value>Please write the code down first, then tick the box.</value></data>
+  <data name="Lock_Title" xml:space="preserve"><value>Unlock Travel Vault</value></data>
+  <data name="Lock_Subtitle" xml:space="preserve"><value>Use your fingerprint, face or phone PIN</value></data>
+  <data name="Lock_ConfirmTitle" xml:space="preserve"><value>Confirm it&apos;s you</value></data>
+  <data name="Lock_Unlock" xml:space="preserve"><value>Unlock</value></data>
+  <data name="Lock_Explain" xml:space="preserve"><value>Your travel documents are locked.</value></data>
+  <data name="Home_StartTitle" xml:space="preserve"><value>Start your family vault</value></data>
+  <data name="Home_StartText" xml:space="preserve"><value>Create a family to keep your tickets — you can invite others later. Or join the family someone has already created.</value></data>
+  <data name="Home_Switch" xml:space="preserve"><value>Switch</value></data>
+  <data name="Home_ChooseFamily" xml:space="preserve"><value>Choose a family</value></data>
+  <data name="Home_NextUp" xml:space="preserve"><value>NEXT UP</value></data>
+  <data name="Home_OpenTicket" xml:space="preserve"><value>Open ticket</value></data>
+  <data name="Home_BoardingPass" xml:space="preserve"><value>Boarding pass</value></data>
+  <data name="Home_Seat" xml:space="preserve"><value>Seat {0}</value></data>
+  <data name="Home_SuggestTrip" xml:space="preserve"><value>These {0} documents look like one trip: “{1}”.</value></data>
+  <data name="Home_GroupTrip" xml:space="preserve"><value>Make it a trip</value></data>
+  <data name="Home_Upcoming" xml:space="preserve"><value>Upcoming</value></data>
+  <data name="Home_Empty" xml:space="preserve"><value>No documents yet. Tap ＋ to add a ticket, or share one to Travel Vault from WhatsApp, Gmail or your files.</value></data>
+  <data name="Import_Title" xml:space="preserve"><value>Add document</value></data>
+  <data name="Import_NoFamily" xml:space="preserve"><value>Create or join a family first (Home or Family tab).</value></data>
+  <data name="Import_Failed" xml:space="preserve"><value>This file couldn&apos;t be read. It may be damaged or password-protected.</value></data>
+  <data name="Import_AlreadyInVault" xml:space="preserve"><value>Already in the vault: {0}</value></data>
+  <data name="Import_Unsupported" xml:space="preserve"><value>Travel Vault can store PDFs, photos, screenshots and text. This file type isn&apos;t supported.</value></data>
+  <data name="Import_TooLarge" xml:space="preserve"><value>This file is larger than 25 MB and can&apos;t be added.</value></data>
+  <data name="Import_Saved" xml:space="preserve"><value>Saved: {0}</value></data>
+  <data name="Review_Title" xml:space="preserve"><value>Check the details</value></data>
+  <data name="Review_Check" xml:space="preserve"><value>Some details couldn&apos;t be read for sure — they&apos;re shown in orange. You can fix them after saving.</value></data>
+  <data name="Review_WhoTravels" xml:space="preserve"><value>Who travels?</value></data>
+  <data name="Review_NoNames" xml:space="preserve"><value>No names were found on this document, so it will be saved for you. You can change this later.</value></data>
+  <data name="Review_NewTraveler" xml:space="preserve"><value>New traveler: {0}</value></data>
+  <data name="Review_NotTraveler" xml:space="preserve"><value>Not a traveler (ignore)</value></data>
+  <data name="Review_PleaseConfirm" xml:space="preserve"><value>Not sure — please confirm</value></data>
+  <data name="Review_DuplicateStrong" xml:space="preserve"><value>This looks like an updated version of “{0}”.</value></data>
+  <data name="Review_DuplicateWeak" xml:space="preserve"><value>This might be the same booking as “{0}”.</value></data>
+  <data name="Review_MergeSwitch" xml:space="preserve"><value>Combine them (keep both files)</value></data>
+  <data name="Review_SaveAndEdit" xml:space="preserve"><value>Save and edit details</value></data>
+  <data name="Document_View" xml:space="preserve"><value>View</value></data>
+  <data name="Document_Barcode" xml:space="preserve"><value>Show barcode</value></data>
+  <data name="Document_CheckWarning" xml:space="preserve"><value>Values in orange were read automatically and may be wrong. Tap Edit to fix them.</value></data>
+  <data name="Document_Duplicate" xml:space="preserve"><value>This may be the same booking as “{0}”.</value></data>
+  <data name="Document_Merge" xml:space="preserve"><value>Combine</value></data>
+  <data name="Document_MergeTitle" xml:space="preserve"><value>Combine documents?</value></data>
+  <data name="Document_MergeText" xml:space="preserve"><value>This document will be combined into “{0}”. Both files are kept as versions.</value></data>
+  <data name="Document_MissingPass" xml:space="preserve"><value>Boarding pass missing: {0}</value></data>
+  <data name="Document_NotOnPhone" xml:space="preserve"><value>not on this phone yet</value></data>
+  <data name="Document_InTrip" xml:space="preserve"><value>Part of “{0}”</value></data>
+  <data name="Document_NoTrip" xml:space="preserve"><value>Not in a trip</value></data>
+  <data name="Document_TripTitle" xml:space="preserve"><value>Trip</value></data>
+  <data name="Document_NewTrip" xml:space="preserve"><value>New trip…</value></data>
+  <data name="Document_RemoveFromTrip" xml:space="preserve"><value>Remove from trip</value></data>
+  <data name="Document_Travelers" xml:space="preserve"><value>Travelers</value></data>
+  <data name="Document_WhoTravels" xml:space="preserve"><value>Who travels?</value></data>
+  <data name="Document_NewTraveler" xml:space="preserve"><value>＋ New traveler</value></data>
+  <data name="Document_NeedTraveler" xml:space="preserve"><value>A document needs at least one traveler.</value></data>
+  <data name="Document_BoardingPasses" xml:space="preserve"><value>Boarding passes</value></data>
+  <data name="Document_Files" xml:space="preserve"><value>Files</value></data>
+  <data name="Document_MakePrimary" xml:space="preserve"><value>Use this</value></data>
+  <data name="Document_Edit" xml:space="preserve"><value>Edit details</value></data>
+  <data name="Document_Share" xml:space="preserve"><value>Share…</value></data>
+  <data name="Document_Save" xml:space="preserve"><value>Save to phone</value></data>
+  <data name="Document_Private" xml:space="preserve"><value>Private</value></data>
+  <data name="Document_PrivateHelp" xml:space="preserve"><value>Only on your phone; family can&apos;t see it</value></data>
+  <data name="Document_IsPrivate" xml:space="preserve"><value>🔒 This document is private: it stays on this phone and in your backups only.</value></data>
+  <data name="Document_PrivacyTitle" xml:space="preserve"><value>Privacy</value></data>
+  <data name="Document_MakePrivateText" xml:space="preserve"><value>Make this private? It will be removed from your family&apos;s phones and stay only on yours.</value></data>
+  <data name="Document_MakeSharedText" xml:space="preserve"><value>Share this with your family? It will be sent to all family phones (encrypted).</value></data>
+  <data name="Document_DeleteTitle" xml:space="preserve"><value>Delete document?</value></data>
+  <data name="Document_DeleteText" xml:space="preserve"><value>It will be moved to “Recently deleted” for 30 days, on every family phone.</value></data>
+  <data name="Document_Deleted" xml:space="preserve"><value>Moved to Recently deleted</value></data>
+  <data name="Document_ValidUntil" xml:space="preserve"><value>Valid until {0}</value></data>
+  <data name="Field_Title" xml:space="preserve"><value>Title</value></data>
+  <data name="Field_Type" xml:space="preserve"><value>Type</value></data>
+  <data name="Field_Provider" xml:space="preserve"><value>Airline / company</value></data>
+  <data name="Field_Pnr" xml:space="preserve"><value>PNR</value></data>
+  <data name="Field_BookingRef" xml:space="preserve"><value>Booking reference</value></data>
+  <data name="Field_DocumentNumber" xml:space="preserve"><value>Document number</value></data>
+  <data name="Field_Country" xml:space="preserve"><value>Country</value></data>
+  <data name="Field_ValidFrom" xml:space="preserve"><value>Valid from</value></data>
+  <data name="Field_Expires" xml:space="preserve"><value>Expires</value></data>
+  <data name="Field_Notes" xml:space="preserve"><value>Notes</value></data>
+  <data name="Edit_Title" xml:space="preserve"><value>Edit details</value></data>
+  <data name="Edit_Legs" xml:space="preserve"><value>Journey</value></data>
+  <data name="Edit_From" xml:space="preserve"><value>From (city or place, code)</value></data>
+  <data name="Edit_To" xml:space="preserve"><value>To (city or place, code)</value></data>
+  <data name="Edit_PlacePlaceholder" xml:space="preserve"><value>City or place</value></data>
+  <data name="Edit_Departs" xml:space="preserve"><value>Departs / check-in / starts</value></data>
+  <data name="Edit_HasArrival" xml:space="preserve"><value>Arrival / check-out time</value></data>
+  <data name="Edit_Number" xml:space="preserve"><value>Flight / train no.</value></data>
+  <data name="Edit_Seat" xml:space="preserve"><value>Seat</value></data>
+  <data name="Edit_AddLeg" xml:space="preserve"><value>Add a leg</value></data>
+  <data name="Edit_RemoveLeg" xml:space="preserve"><value>Remove this leg</value></data>
+  <data name="File_Requested" xml:space="preserve"><value>This file isn&apos;t on your phone yet. Getting it from your family&apos;s phones…</value></data>
+  <data name="File_SaveTitle" xml:space="preserve"><value>Save to phone</value></data>
+  <data name="File_SaveWarning" xml:space="preserve"><value>A readable copy will be saved in Downloads. Other apps on this phone — and anyone using it — can open files there, outside the app lock.</value></data>
+  <data name="File_SaveConfirm" xml:space="preserve"><value>Save copy</value></data>
+  <data name="File_Saved" xml:space="preserve"><value>Saved to {0}</value></data>
+  <data name="Viewer_Brightness" xml:space="preserve"><value>Brightness</value></data>
+  <data name="Viewer_CantShow" xml:space="preserve"><value>This file can&apos;t be shown here. Use Share to open it in another app.</value></data>
+  <data name="Viewer_MissingHelp" xml:space="preserve"><value>It will appear as soon as a family phone that has it is online.</value></data>
+  <data name="Trips_Upcoming" xml:space="preserve"><value>Upcoming</value></data>
+  <data name="Trips_Ongoing" xml:space="preserve"><value>Ongoing</value></data>
+  <data name="Trips_Completed" xml:space="preserve"><value>Completed</value></data>
+  <data name="Trips_Empty" xml:space="preserve"><value>Nothing here. Add a ticket with ＋ on Home, or share one to Travel Vault; documents that belong together can be grouped into a trip.</value></data>
+  <data name="Trips_Documents" xml:space="preserve"><value>{0} documents</value></data>
+  <data name="Trip_NameTitle" xml:space="preserve"><value>Trip name</value></data>
+  <data name="Trip_NamePrompt" xml:space="preserve"><value>What should this trip be called?</value></data>
+  <data name="Trip_Rename" xml:space="preserve"><value>Rename trip</value></data>
+  <data name="Trip_Delete" xml:space="preserve"><value>Delete trip</value></data>
+  <data name="Trip_DeleteTitle" xml:space="preserve"><value>Delete trip?</value></data>
+  <data name="Trip_DeleteText" xml:space="preserve"><value>The trip is removed; its documents stay in the vault.</value></data>
+  <data name="Search_Placeholder" xml:space="preserve"><value>City, name, PNR, flight number…</value></data>
+  <data name="Search_All" xml:space="preserve"><value>All</value></data>
+  <data name="Search_Ids" xml:space="preserve"><value>Passports &amp; visas</value></data>
+  <data name="Search_Count" xml:space="preserve"><value>{0} documents</value></data>
+  <data name="Family_Create" xml:space="preserve"><value>Create a family</value></data>
+  <data name="Family_Join" xml:space="preserve"><value>Join a family</value></data>
+  <data name="Family_CreateTitle" xml:space="preserve"><value>New family</value></data>
+  <data name="Family_CreatePrompt" xml:space="preserve"><value>Family name</value></data>
+  <data name="Family_DefaultName" xml:space="preserve"><value>{0}&apos;s family</value></data>
+  <data name="Family_Rename" xml:space="preserve"><value>Rename</value></data>
+  <data name="Family_SyncNow" xml:space="preserve"><value>Sync now</value></data>
+  <data name="Family_Admin" xml:space="preserve"><value>Admin</value></data>
+  <data name="Family_Member" xml:space="preserve"><value>Member</value></data>
+  <data name="Family_ThisPhone" xml:space="preserve"><value>this phone</value></data>
+  <data name="Family_LastSeen" xml:space="preserve"><value>seen {0}</value></data>
+  <data name="Family_Members" xml:space="preserve"><value>Members</value></data>
+  <data name="Family_Travelers" xml:space="preserve"><value>Travelers (incl. kids and others without the app)</value></data>
+  <data name="Family_Other" xml:space="preserve"><value>Other families</value></data>
+  <data name="Family_Leave" xml:space="preserve"><value>Leave this family</value></data>
+  <data name="Family_LeaveTitle" xml:space="preserve"><value>Leave family?</value></data>
+  <data name="Family_LeaveText" xml:space="preserve"><value>All of “{0}”&apos;s documents will be deleted from this phone. The others keep theirs.</value></data>
+  <data name="Family_InviteTitle" xml:space="preserve"><value>Invite someone</value></data>
+  <data name="Family_InviteHelp" xml:space="preserve"><value>In person: they scan a QR code from your screen (joins at once). By message: they paste the invite, then you compare a 6-digit code on a call and approve.</value></data>
+  <data name="Family_InviteQr" xml:space="preserve"><value>Show QR code (in person)</value></data>
+  <data name="Family_InviteMessage" xml:space="preserve"><value>Send invite by message</value></data>
+  <data name="Family_InviteSent" xml:space="preserve"><value>When they&apos;ve pasted the invite, a request appears here. Compare the code with them on a call before approving.</value></data>
+  <data name="Family_QrExpires" xml:space="preserve"><value>Valid until {0} · Don&apos;t photograph or share this code</value></data>
+  <data name="Family_WantsToJoin" xml:space="preserve"><value>{0} wants to join</value></data>
+  <data name="Family_CompareCode" xml:space="preserve"><value>Call them and check that their screen shows this same code:</value></data>
+  <data name="Family_Approve" xml:space="preserve"><value>Approve</value></data>
+  <data name="Family_Reject" xml:space="preserve"><value>Reject</value></data>
+  <data name="Family_ApproveTitle" xml:space="preserve"><value>Approve?</value></data>
+  <data name="Family_ApproveText" xml:space="preserve"><value>Only approve if {0}&apos;s phone shows the code {1}. A different code means someone else may be trying to join.</value></data>
+  <data name="Family_Approved" xml:space="preserve"><value>{0} has joined</value></data>
+  <data name="Family_Remove" xml:space="preserve"><value>Remove</value></data>
+  <data name="Family_RemoveTitle" xml:space="preserve"><value>Remove member?</value></data>
+  <data name="Family_RemoveText" xml:space="preserve"><value>{0}&apos;s phone will stop receiving family documents. A new family key is created for everyone else. Documents already on their phone can&apos;t be taken back.</value></data>
+  <data name="Family_MakeAdmin" xml:space="preserve"><value>Make admin</value></data>
+  <data name="Family_MakeAdminShort" xml:space="preserve"><value>Admin</value></data>
+  <data name="Family_MakeAdminText" xml:space="preserve"><value>{0} will be able to invite and remove members.</value></data>
+  <data name="Family_WaitingAdmission" xml:space="preserve"><value>Waiting for the admin&apos;s phone to confirm you…</value></data>
+  <data name="Family_RemovedTitle" xml:space="preserve"><value>Removed from family</value></data>
+  <data name="Family_RemovedText" xml:space="preserve"><value>You were removed from this family. Nothing new will arrive; documents already on this phone stay until you delete them.</value></data>
+  <data name="Family_DeleteData" xml:space="preserve"><value>Delete this family&apos;s documents</value></data>
+  <data name="Family_DeleteDataConfirm" xml:space="preserve"><value>Delete all of this family&apos;s documents from this phone?</value></data>
+  <data name="Family_Privacy" xml:space="preserve"><value>Family documents travel end-to-end encrypted through a free relay (ntfy.sh) that only sees scrambled data and forgets it within 12 hours.</value></data>
+  <data name="Join_Title" xml:space="preserve"><value>Join a family</value></data>
+  <data name="Join_InPersonTitle" xml:space="preserve"><value>Together in person</value></data>
+  <data name="Join_InPersonHelp" xml:space="preserve"><value>Ask the family admin to open Family → Show QR code, then take a photo of it.</value></data>
+  <data name="Join_Scan" xml:space="preserve"><value>Scan the QR code</value></data>
+  <data name="Join_RemoteTitle" xml:space="preserve"><value>Got an invite message?</value></data>
+  <data name="Join_RemoteHelp" xml:space="preserve"><value>Copy the whole invite message (for example from WhatsApp), then tap below.</value></data>
+  <data name="Join_Paste" xml:space="preserve"><value>Paste the invite</value></data>
+  <data name="Join_PastePrompt" xml:space="preserve"><value>Paste the invite message here</value></data>
+  <data name="Join_NoQr" xml:space="preserve"><value>No Travel Vault QR code was found in the photo. Try again, closer and in focus.</value></data>
+  <data name="Join_Invalid" xml:space="preserve"><value>This isn&apos;t a valid invite, or it has expired. Ask for a new one.</value></data>
+  <data name="Join_Offline" xml:space="preserve"><value>No internet connection. Joining needs internet once; afterwards the app works offline.</value></data>
+  <data name="Join_Joining" xml:space="preserve"><value>Joining {0}… it completes when the admin&apos;s phone confirms.</value></data>
+  <data name="Join_Waiting" xml:space="preserve"><value>Request sent to {0}.</value></data>
+  <data name="Join_ReadCode" xml:space="preserve"><value>Call the admin and read them this code. They approve when their screen shows the same code.</value></data>
+  <data name="Join_Check" xml:space="preserve"><value>Check if I&apos;ve been approved</value></data>
+  <data name="Join_StillWaiting" xml:space="preserve"><value>Still waiting for approval</value></data>
+  <data name="Join_Joined" xml:space="preserve"><value>You joined {0}</value></data>
+  <data name="Join_Rejected" xml:space="preserve"><value>The admin didn&apos;t approve the request.</value></data>
+  <data name="Join_Expired" xml:space="preserve"><value>The invite has expired. Ask for a new one.</value></data>
+  <data name="Travelers_Title" xml:space="preserve"><value>Travelers</value></data>
+  <data name="Travelers_Help" xml:space="preserve"><value>Everyone who travels, with or without the app. Tap a person to rename them or add other ways their name is printed on tickets.</value></data>
+  <data name="Travelers_Add" xml:space="preserve"><value>Add a traveler</value></data>
+  <data name="Travelers_NamePrompt" xml:space="preserve"><value>Name</value></data>
+  <data name="Travelers_Rename" xml:space="preserve"><value>Rename</value></data>
+  <data name="Travelers_AddAlias" xml:space="preserve"><value>Add a name as printed on tickets</value></data>
+  <data name="Travelers_AliasPrompt" xml:space="preserve"><value>For example SHARMA/RAHUL or R K SHARMA</value></data>
+  <data name="Travelers_RemoveAlias" xml:space="preserve"><value>Remove a printed name</value></data>
+  <data name="Travelers_ThisIsMe" xml:space="preserve"><value>This is me</value></data>
+  <data name="Travelers_You" xml:space="preserve"><value>You</value></data>
+  <data name="Travelers_Phone" xml:space="preserve"><value>{0}&apos;s phone</value></data>
+  <data name="Travelers_AlsoPrinted" xml:space="preserve"><value>also: {0}</value></data>
+  <data name="Travelers_DeleteText" xml:space="preserve"><value>Delete {0}? Documents keep their other travelers.</value></data>
+  <data name="Deleted_Title" xml:space="preserve"><value>Recently deleted</value></data>
+  <data name="Deleted_Help" xml:space="preserve"><value>Deleted documents are kept for 30 days. Tap one to restore it.</value></data>
+  <data name="Deleted_Empty" xml:space="preserve"><value>Nothing here.</value></data>
+  <data name="Deleted_Restored" xml:space="preserve"><value>Restored: {0}</value></data>
+  <data name="Restore_Title" xml:space="preserve"><value>Restore from backup</value></data>
+  <data name="Restore_Pick" xml:space="preserve"><value>Choose the backup file</value></data>
+  <data name="Restore_EnterCode" xml:space="preserve"><value>Enter your recovery code</value></data>
+  <data name="Restore_BadCode" xml:space="preserve"><value>That isn&apos;t a valid recovery code. Check for typos.</value></data>
+  <data name="Restore_WrongCode" xml:space="preserve"><value>This recovery code doesn&apos;t open the backup.</value></data>
+  <data name="Restore_NotBackup" xml:space="preserve"><value>This file isn&apos;t a Travel Vault backup.</value></data>
+  <data name="Restore_Done" xml:space="preserve"><value>Backup restored</value></data>
+  <data name="Restore_ReplaceWarning" xml:space="preserve"><value>Restoring replaces everything on this phone with the backup.</value></data>
+  <data name="Restore_Continue" xml:space="preserve"><value>Continue</value></data>
+  <data name="Settings_YourName" xml:space="preserve"><value>Your name</value></data>
+  <data name="Settings_Security" xml:space="preserve"><value>Security</value></data>
+  <data name="Settings_AppLock" xml:space="preserve"><value>App lock</value></data>
+  <data name="Settings_AppLockHelp" xml:space="preserve"><value>Fingerprint, face or phone PIN to open the app</value></data>
+  <data name="Settings_NoScreenLock" xml:space="preserve"><value>This phone has no screen lock, so the app can&apos;t be locked. Set one in Android Settings → Security.</value></data>
+  <data name="Settings_LockAfter" xml:space="preserve"><value>Lock again after leaving the app for</value></data>
+  <data name="Settings_LockNow" xml:space="preserve"><value>Immediately</value></data>
+  <data name="Settings_Lock1" xml:space="preserve"><value>1 minute</value></data>
+  <data name="Settings_Lock5" xml:space="preserve"><value>5 minutes</value></data>
+  <data name="Settings_Lock15" xml:space="preserve"><value>15 minutes</value></data>
+  <data name="Settings_Strict" xml:space="preserve"><value>Strict mode</value></data>
+  <data name="Settings_StrictHelp" xml:space="preserve"><value>No background sync, lock immediately, block screenshots everywhere</value></data>
+  <data name="Settings_KeyHardware" xml:space="preserve"><value>Keys are protected by this phone&apos;s security chip.</value></data>
+  <data name="Settings_KeySoftware" xml:space="preserve"><value>Keys are protected by Android&apos;s key store.</value></data>
+  <data name="Settings_Reminders" xml:space="preserve"><value>Reminders</value></data>
+  <data name="Settings_AllFamily" xml:space="preserve"><value>The whole family&apos;s travel</value></data>
+  <data name="Settings_AllFamilyHelp" xml:space="preserve"><value>Off: only trips you travel on or added</value></data>
+  <data name="Settings_RemindersOk" xml:space="preserve"><value>Reminders are on and on time</value></data>
+  <data name="Settings_NotificationsOff" xml:space="preserve"><value>Notifications are off for Travel Vault</value></data>
+  <data name="Settings_NotOnTime" xml:space="preserve"><value>Reminders may be a few minutes late</value></data>
+  <data name="Settings_Fix" xml:space="preserve"><value>Fix</value></data>
+  <data name="Settings_Backup" xml:space="preserve"><value>Backup</value></data>
+  <data name="Settings_BackupHelp" xml:space="preserve"><value>One encrypted file with everything. Keep it anywhere (your Google Drive, a PC, WhatsApp to yourself) — it opens only with your recovery code.</value></data>
+  <data name="Settings_LastBackup" xml:space="preserve"><value>Last backup {0}</value></data>
+  <data name="Settings_NoBackup" xml:space="preserve"><value>No backup yet</value></data>
+  <data name="Settings_BackupDownloads" xml:space="preserve"><value>Save backup to Downloads</value></data>
+  <data name="Settings_BackupShare" xml:space="preserve"><value>Share backup…</value></data>
+  <data name="Settings_ShowCode" xml:space="preserve"><value>Show recovery code</value></data>
+  <data name="Settings_Restore" xml:space="preserve"><value>Restore from a backup</value></data>
+  <data name="Settings_Vault" xml:space="preserve"><value>Vault</value></data>
+  <data name="Settings_Storage" xml:space="preserve"><value>Documents on this phone: {0}</value></data>
+  <data name="Settings_App" xml:space="preserve"><value>App</value></data>
+  <data name="Settings_Version" xml:space="preserve"><value>Version {0}</value></data>
+  <data name="Settings_CheckUpdates" xml:space="preserve"><value>Check for updates</value></data>
+  <data name="Settings_About" xml:space="preserve"><value>About and licences</value></data>
+  <data name="Settings_AboutText" xml:space="preserve"><value>Travel Vault is free and open source (MIT). No accounts, no ads, no tracking. Uses .NET MAUI (MIT), SQLite3 Multiple Ciphers (MIT), PdfPig (Apache-2.0), QRCoder (MIT), CommunityToolkit.Mvvm (MIT), Open Sans (OFL), Google ML Kit (on-device, free), airport data from mwgg/Airports (MIT), and the free ntfy.sh relay.</value></data>
+  <data name="Settings_EraseTitle" xml:space="preserve"><value>Erase everything</value></data>
+  <data name="Settings_EraseText" xml:space="preserve"><value>All documents, keys and settings on this phone are destroyed. Without a backup this can&apos;t be undone. Family phones keep their copies.</value></data>
+  <data name="Settings_EraseConfirm" xml:space="preserve"><value>Erase</value></data>
+  <data name="Settings_EraseType" xml:space="preserve"><value>Type ERASE to confirm</value></data>
+  <data name="Settings_EraseWord" xml:space="preserve"><value>ERASE</value></data>
+  <data name="Reminder_Channel" xml:space="preserve"><value>Travel reminders</value></data>
+  <data name="Reminder_ChannelDescription" xml:space="preserve"><value>Departures, missing boarding passes, trips tomorrow and expiring passports or visas</value></data>
+  <data name="Reminder_LockScreen" xml:space="preserve"><value>Travel reminder</value></data>
+  <data name="Update_Title" xml:space="preserve"><value>Update</value></data>
+  <data name="Update_Available" xml:space="preserve"><value>Travel Vault {0} is available.</value></data>
+  <data name="Update_Install" xml:space="preserve"><value>Install</value></data>
+  <data name="Update_Later" xml:space="preserve"><value>Later</value></data>
+  <data name="Update_None" xml:space="preserve"><value>You have the latest version.</value></data>
+  <data name="Update_Failed" xml:space="preserve"><value>Couldn&apos;t check for updates. Try again on Wi-Fi.</value></data>
+  <data name="Update_Damaged" xml:space="preserve"><value>The download was damaged and has been deleted. Try again.</value></data>
+  <data name="Update_AllowInstall" xml:space="preserve"><value>Android needs your permission once to install updates for Travel Vault. Turn on “Allow from this source”, then try again.</value></data>
+</root>

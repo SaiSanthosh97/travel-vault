@@ -1,0 +1,45 @@
+<Solution>
+  <Folder Name="/Apps/">
+    <Project Path="src/Apps/TravelVault.App/TravelVault.App.csproj" />
+  </Folder>
+  <Folder Name="/Components/">
+    <Project Path="src/Components/Core.AppUpdater/Core.AppUpdater.csproj" />
+    <Project Path="src/Components/Core.Backup/Core.Backup.csproj" />
+    <Project Path="src/Components/Core.Common/Core.Common.csproj" />
+    <Project Path="src/Components/Core.Documents/Core.Documents.csproj" />
+    <Project Path="src/Components/Core.Duplicates/Core.Duplicates.csproj" />
+    <Project Path="src/Components/Core.Families/Core.Families.csproj" />
+    <Project Path="src/Components/Core.Parsing/Core.Parsing.csproj" />
+    <Project Path="src/Components/Core.Relay/Core.Relay.csproj" />
+    <Project Path="src/Components/Core.Reminders/Core.Reminders.csproj" />
+    <Project Path="src/Components/Core.Search/Core.Search.csproj" />
+    <Project Path="src/Components/Core.Security/Core.Security.csproj" />
+    <Project Path="src/Components/Core.Sync/Core.Sync.csproj" />
+    <Project Path="src/Components/Core.Travelers/Core.Travelers.csproj" />
+    <Project Path="src/Components/Core.Trips/Core.Trips.csproj" />
+    <Project Path="src/Components/Core.Vault/Core.Vault.csproj" />
+    <Project Path="src/Components/Device.BackgroundWork/Device.BackgroundWork.csproj" />
+    <Project Path="src/Components/Device.Files/Device.Files.csproj" />
+    <Project Path="src/Components/Device.Reminders/Device.Reminders.csproj" />
+    <Project Path="src/Components/Device.Security/Device.Security.csproj" />
+    <Project Path="src/Components/Device.Vision/Device.Vision.csproj" />
+    <Project Path="src/Components/Storage.Sqlite/Storage.Sqlite.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Core.AppUpdater.Tests/Core.AppUpdater.Tests.csproj" />
+    <Project Path="tests/Core.Backup.Tests/Core.Backup.Tests.csproj" />
+    <Project Path="tests/Core.Common.Tests/Core.Common.Tests.csproj" />
+    <Project Path="tests/Core.Documents.Tests/Core.Documents.Tests.csproj" />
+    <Project Path="tests/Core.Families.Tests/Core.Families.Tests.csproj" />
+    <Project Path="tests/Core.Parsing.Tests/Core.Parsing.Tests.csproj" />
+    <Project Path="tests/Core.Relay.Tests/Core.Relay.Tests.csproj" />
+    <Project Path="tests/Core.Reminders.Tests/Core.Reminders.Tests.csproj" />
+    <Project Path="tests/Core.Search.Tests/Core.Search.Tests.csproj" />
+    <Project Path="tests/Core.Security.Tests/Core.Security.Tests.csproj" />
+    <Project Path="tests/Core.Sync.Tests/Core.Sync.Tests.csproj" />
+    <Project Path="tests/Core.Travelers.Tests/Core.Travelers.Tests.csproj" />
+    <Project Path="tests/Core.Trips.Tests/Core.Trips.Tests.csproj" />
+    <Project Path="tests/Core.Vault.Tests/Core.Vault.Tests.csproj" />
+    <Project Path="tests/Storage.Sqlite.Tests/Storage.Sqlite.Tests.csproj" />
+  </Folder>
+</Solution>

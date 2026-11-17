@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Schedules the planned reminders as Android alarms (exact when allowed), shows the notifications (details
+         hidden on the lock screen), and re-plans after a restart / clock change. Adapted from Use It Before's TimedReminders. -->
+    <TargetFrameworks>net10.0-android</TargetFrameworks>
+    <SupportedOSPlatformVersion>26</SupportedOSPlatformVersion>
+  </PropertyGroup>
+
+</Project>

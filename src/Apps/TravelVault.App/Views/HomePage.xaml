@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:VaultPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:TravelVault.App.Views"
+             xmlns:vm="clr-namespace:TravelVault.App.ViewModels"
+             xmlns:svc="clr-namespace:TravelVault.App.Services"
+             xmlns:s="clr-namespace:TravelVault.App.Resources.Strings"
+             x:Class="TravelVault.App.Views.HomePage"
+             x:DataType="vm:HomeViewModel"
+            
+             Title="{x:Static s:AppResources.AppName}">
+
+    <Grid>
+        <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}">
+            <ScrollView>
+                <VerticalStackLayout Padding="16,8,16,96" Spacing="12">
+
+                    <!-- No family yet -->
+                    <Border Style="{StaticResource Card}" Padding="16" IsVisible="{Binding NoFamily}">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="{x:Static s:AppResources.Home_StartTitle}" Style="{StaticResource Heading}" />
+                            <Label Text="{x:Static s:AppResources.Home_StartText}" />
+                            <Button Text="{x:Static s:AppResources.Family_Create}" Command="{Binding CreateFamilyCommand}" />
+                            <Button Text="{x:Static s:AppResources.Family_Join}" Command="{Binding JoinFamilyCommand}" Style="{StaticResource OutlineButton}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Family + sync status -->
+                    <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding HasFamily}">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding FamilyName}" Style="{StaticResource Heading}" />
+                            <Label Text="{Binding SyncStatus}" Style="{StaticResource Subtle}" />
+                        </VerticalStackLayout>
+                        <Button Grid.Column="1" Text="{x:Static s:AppResources.Home_Switch}" Style="{StaticResource LinkButton}"
+                                Command="{Binding SwitchFamilyCommand}" IsVisible="{Binding ManyFamilies}" VerticalOptions="Center" />
+                    </Grid>
+
+                    <Border Style="{StaticResource Card}" Padding="16" IsVisible="{Binding Removed}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="{x:Static s:AppResources.Family_RemovedText}" TextColor="{StaticResource Danger}" />
+                            <Button Text="{x:Static s:AppResources.Family_DeleteData}" Style="{StaticResource DangerButton}" Command="{Binding DeleteRemovedFamilyCommand}" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Next up -->
+                    <Border Style="{StaticResource Card}" Padding="16" IsVisible="{Binding HasNextUp}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenNextUpCommand}" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="{x:Static s:AppResources.Home_NextUp}" Style="{StaticResource Subtle}" FontFamily="OpenSansSemibold" />
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                <Label Text="{Binding NextUpIcon}" FontSize="36" VerticalOptions="Center" />
+                                <VerticalStackLayout Grid.Column="1">
+                                    <Label Text="{Binding NextUpTitle}" FontFamily="OpenSansSemibold" FontSize="22" />
+                                    <Label Text="{Binding NextUpWhen}" FontSize="20" />
+                                </VerticalStackLayout>
+                            </Grid>
+                            <Label Text="{Binding NextUpDetails}" Style="{StaticResource Subtle}" />
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,6,0,0">
+                                <Button Text="{x:Static s:AppResources.Home_OpenTicket}" Command="{Binding OpenNextUpCommand}" />
+                                <Button Grid.Column="1" Text="{x:Static s:AppResources.Home_BoardingPass}" Command="{Binding OpenBoardingPassCommand}"
+                                        Style="{StaticResource OutlineButton}" IsVisible="{Binding NextUpHasBoardingPass}" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Trip suggestions -->
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Suggestions}" Spacing="8">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:SuggestionRow">
+                                <Border Style="{StaticResource Card}" Padding="14">
+                                    <VerticalStackLayout Spacing="8">
+                                        <Label Text="{Binding Text}" />
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                            <Button Text="{x:Static s:AppResources.Home_GroupTrip}" Command="{Binding ConfirmSuggestionCommand, Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, x:DataType=vm:HomeViewModel}" CommandParameter="{Binding .}" />
+                                            <Button Grid.Column="1" Text="{x:Static s:AppResources.Common_NotNow}" Style="{StaticResource OutlineButton}"
+                                                    Command="{Binding DismissSuggestionCommand, Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, x:DataType=vm:HomeViewModel}" CommandParameter="{Binding .}" />
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                    <!-- Upcoming -->
+                    <Label Text="{x:Static s:AppResources.Home_Upcoming}" Style="{StaticResource SectionLabel}" IsVisible="{Binding HasFamily}" />
+                    <Label Text="{x:Static s:AppResources.Home_Empty}" Style="{StaticResource Subtle}" IsVisible="{Binding IsEmpty}" />
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Upcoming}" Spacing="8">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="svc:DocumentRow">
+                                <views:DocumentRowView Row="{Binding .}"
+                                    Command="{Binding OpenCommand, Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, x:DataType=vm:HomeViewModel}" />
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </ScrollView>
+        </RefreshView>
+
+        <!-- Add a document -->
+        <Button Text="＋" FontSize="34" WidthRequest="68" HeightRequest="68" CornerRadius="34" Padding="0"
+                HorizontalOptions="End" VerticalOptions="End" Margin="0,0,20,20"
+                Command="{Binding AddCommand}" IsVisible="{Binding HasFamily}"
+                SemanticProperties.Description="{x:Static s:AppResources.Add_Title}" />
+    </Grid>
+</views:VaultPage>

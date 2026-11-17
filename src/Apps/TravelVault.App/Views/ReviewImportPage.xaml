@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TravelVault.App.ViewModels"
+             xmlns:s="clr-namespace:TravelVault.App.Resources.Strings"
+             x:Class="TravelVault.App.Views.ReviewImportPage"
+             x:DataType="vm:ReviewImportViewModel"
+             Title="{x:Static s:AppResources.Review_Title}">
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Padding="16,8,16,32" Spacing="12">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                    <Label Text="{Binding Icon}" FontSize="40" VerticalOptions="Center" />
+                    <VerticalStackLayout Grid.Column="1">
+                        <Label Text="{Binding Title}" Style="{StaticResource Heading}" />
+                        <Label Text="{Binding TypeText}" Style="{StaticResource Subtle}" />
+                    </VerticalStackLayout>
+                </Grid>
+                <Label Text="{Binding Warnings}" TextColor="{StaticResource Warning}" IsVisible="{Binding Warnings, Converter={StaticResource NotEmpty}}" />
+
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Fields}" Spacing="6">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:FieldRow">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Label}" Style="{StaticResource Subtle}" />
+                                <Label Text="{Binding Value}" FontFamily="OpenSansSemibold">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding Check}" Value="True">
+                                            <Setter Property="TextColor" Value="{StaticResource Warning}" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </VerticalStackLayout>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+                <!-- Who travels -->
+                <Label Text="{x:Static s:AppResources.Review_WhoTravels}" Style="{StaticResource SectionLabel}" />
+                <Label Text="{x:Static s:AppResources.Review_NoNames}" Style="{StaticResource Subtle}" IsVisible="{Binding NoNames}" />
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Names}" Spacing="8">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:NameChoice">
+                            <Border Style="{StaticResource Card}" Padding="12,8">
+                                <VerticalStackLayout>
+                                    <Label Text="{Binding RawName}" FontFamily="OpenSansSemibold" />
+                                    <Picker ItemsSource="{Binding Options}" SelectedIndex="{Binding SelectedIndex}" />
+                                    <Label Text="{Binding Hint}" TextColor="{StaticResource Warning}" IsVisible="{Binding Hint, Converter={StaticResource NotEmpty}}" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+                <!-- Duplicate -->
+                <Border Style="{StaticResource Card}" Padding="14" IsVisible="{Binding HasDuplicate}">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="{Binding DuplicateText}" />
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="{x:Static s:AppResources.Review_MergeSwitch}" VerticalOptions="Center" />
+                            <Switch Grid.Column="1" IsToggled="{Binding Merge}" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Button Text="{x:Static s:AppResources.Common_Save}" Command="{Binding SaveCommand}" Margin="0,8,0,0" />
+                <Button Text="{x:Static s:AppResources.Review_SaveAndEdit}" Command="{Binding SaveAndEditCommand}" Style="{StaticResource OutlineButton}" />
+                <Button Text="{x:Static s:AppResources.Common_Cancel}" Command="{Binding CancelCommand}" Style="{StaticResource LinkButton}" />
+            </VerticalStackLayout>
+        </ScrollView>
+        <Grid IsVisible="{Binding IsBusy}" BackgroundColor="#66000000">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" Color="White" VerticalOptions="Center" HorizontalOptions="Center" />
+        </Grid>
+    </Grid>
+</ContentPage>

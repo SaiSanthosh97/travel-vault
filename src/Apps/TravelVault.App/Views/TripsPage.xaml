@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:VaultPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:TravelVault.App.Views"
+             xmlns:vm="clr-namespace:TravelVault.App.ViewModels"
+             xmlns:s="clr-namespace:TravelVault.App.Resources.Strings"
+             x:Class="TravelVault.App.Views.TripsPage"
+             x:DataType="vm:TripsViewModel"
+             Title="{x:Static s:AppResources.Tab_Trips}">
+    <ScrollView>
+        <VerticalStackLayout Padding="16,8,16,32" Spacing="12">
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                <Button Text="{x:Static s:AppResources.Trips_Upcoming}" Command="{Binding ShowCommand}" CommandParameter="Upcoming" Style="{StaticResource OutlineButton}" FontSize="15" Padding="4" />
+                <Button Grid.Column="1" Text="{x:Static s:AppResources.Trips_Ongoing}" Command="{Binding ShowCommand}" CommandParameter="Ongoing" Style="{StaticResource OutlineButton}" FontSize="15" Padding="4" />
+                <Button Grid.Column="2" Text="{x:Static s:AppResources.Trips_Completed}" Command="{Binding ShowCommand}" CommandParameter="Completed" Style="{StaticResource OutlineButton}" FontSize="15" Padding="4" />
+            </Grid>
+            <Label Text="{Binding StatusText}" Style="{StaticResource SectionLabel}" />
+            <Label Text="{x:Static s:AppResources.Trips_Empty}" Style="{StaticResource Subtle}" IsVisible="{Binding IsEmpty}" />
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Trips}" Spacing="8">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:TripRow">
+                        <Border Style="{StaticResource Card}" Padding="14,10">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OpenCommand, Source={RelativeSource AncestorType={x:Type vm:TripsViewModel}}, x:DataType=vm:TripsViewModel}" CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="{Binding Name}" FontFamily="OpenSansSemibold" FontSize="20" />
+                                <Label Text="{Binding Dates}" />
+                                <Label Text="{Binding Details}" Style="{StaticResource Subtle}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</views:VaultPage>

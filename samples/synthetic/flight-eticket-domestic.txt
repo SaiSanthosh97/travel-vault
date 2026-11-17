@@ -1,0 +1,18 @@
+IndiGo
+E-Ticket / Itinerary
+Booking Status: CONFIRMED
+PNR: X7KQ2P
+Booking ID: NF2611781234
+
+Flight Details
+6E 2345    Bengaluru (BLR) → Delhi (DEL)
+Departure: Sat, 12 Dec 2026 06:10    Terminal 1
+Arrival:   Sat, 12 Dec 2026 08:55    Terminal 2
+Economy
+
+Passenger Details
+1. Mr Rahul Sharma (Adult)    Seat 14C
+2. Mrs Priya Sharma (Adult)   Seat 14D
+
+Baggage: Check-in 15 kg, Cabin 7 kg
+This is a synthetic sample for testing. Not a real booking.

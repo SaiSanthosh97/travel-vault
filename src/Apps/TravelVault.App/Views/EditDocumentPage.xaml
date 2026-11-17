@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TravelVault.App.ViewModels"
+             xmlns:s="clr-namespace:TravelVault.App.Resources.Strings"
+             x:Class="TravelVault.App.Views.EditDocumentPage"
+             x:DataType="vm:EditDocumentViewModel"
+             Title="{x:Static s:AppResources.Edit_Title}">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="{x:Static s:AppResources.Common_Save}" Command="{Binding SaveCommand}" />
+    </ContentPage.ToolbarItems>
+    <ScrollView>
+        <VerticalStackLayout Padding="16,8,16,32" Spacing="6">
+            <Label Text="{x:Static s:AppResources.Field_Title}" Style="{StaticResource Subtle}" />
+            <Entry Text="{Binding Title}" MaxLength="100" />
+            <Label Text="{x:Static s:AppResources.Field_Type}" Style="{StaticResource Subtle}" />
+            <Picker ItemsSource="{Binding TypeNames}" SelectedIndex="{Binding TypeIndex}" />
+            <Label Text="{x:Static s:AppResources.Field_Provider}" Style="{StaticResource Subtle}" />
+            <Entry Text="{Binding Provider}" MaxLength="80" />
+            <Label Text="{x:Static s:AppResources.Field_Pnr}" Style="{StaticResource Subtle}" />
+            <Entry Text="{Binding Pnr}" MaxLength="20" Keyboard="Text" />
+            <Label Text="{x:Static s:AppResources.Field_BookingRef}" Style="{StaticResource Subtle}" />
+            <Entry Text="{Binding BookingReference}" MaxLength="40" />
+
+            <VerticalStackLayout IsVisible="{Binding HasIdentity}" Spacing="6">
+                <Label Text="{x:Static s:AppResources.Field_DocumentNumber}" Style="{StaticResource Subtle}" />
+                <Entry Text="{Binding IdentityNumber}" MaxLength="30" />
+                <Label Text="{x:Static s:AppResources.Field_Expires}" Style="{StaticResource Subtle}" />
+                <DatePicker Date="{Binding ExpiresOn}" />
+            </VerticalStackLayout>
+
+            <Label Text="{x:Static s:AppResources.Edit_Legs}" Style="{StaticResource SectionLabel}" />
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Segments}" Spacing="10">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:SegmentEdit">
+                        <Border Style="{StaticResource Card}" Padding="12">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{x:Static s:AppResources.Edit_From}" Style="{StaticResource Subtle}" />
+                                <Grid ColumnDefinitions="3*,*" ColumnSpacing="8">
+                                    <Entry Text="{Binding FromName}" Placeholder="{x:Static s:AppResources.Edit_PlacePlaceholder}" />
+                                    <Entry Grid.Column="1" Text="{Binding FromCode}" Placeholder="BLR" MaxLength="5" />
+                                </Grid>
+                                <VerticalStackLayout IsVisible="{Binding HasDestination}" Spacing="4">
+                                    <Label Text="{x:Static s:AppResources.Edit_To}" Style="{StaticResource Subtle}" />
+                                    <Grid ColumnDefinitions="3*,*" ColumnSpacing="8">
+                                        <Entry Text="{Binding ToName}" Placeholder="{x:Static s:AppResources.Edit_PlacePlaceholder}" />
+                                        <Entry Grid.Column="1" Text="{Binding ToCode}" Placeholder="DEL" MaxLength="5" />
+                                    </Grid>
+                                </VerticalStackLayout>
+                                <Label Text="{x:Static s:AppResources.Edit_Departs}" Style="{StaticResource Subtle}" />
+                                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                                    <DatePicker Date="{Binding DepartDate}" />
+                                    <TimePicker Grid.Column="1" Time="{Binding DepartTime}" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Label Text="{x:Static s:AppResources.Edit_HasArrival}" VerticalOptions="Center" />
+                                    <Switch Grid.Column="1" IsToggled="{Binding HasArrival}" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,*" ColumnSpacing="8" IsVisible="{Binding HasArrival}">
+                                    <DatePicker Date="{Binding ArriveDate}" />
+                                    <TimePicker Grid.Column="1" Time="{Binding ArriveTime}" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                                    <Entry Text="{Binding ServiceNumber}" Placeholder="{x:Static s:AppResources.Edit_Number}" />
+                                    <Entry Grid.Column="1" Text="{Binding Seat}" Placeholder="{x:Static s:AppResources.Edit_Seat}" />
+                                </Grid>
+                                <Button Text="{x:Static s:AppResources.Edit_RemoveLeg}" Style="{StaticResource LinkButton}" HorizontalOptions="Start"
+                                        Command="{Binding RemoveLegCommand, Source={RelativeSource AncestorType={x:Type vm:EditDocumentViewModel}}, x:DataType=vm:EditDocumentViewModel}" CommandParameter="{Binding .}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+            <Button Text="{x:Static s:AppResources.Edit_AddLeg}" Command="{Binding AddLegCommand}" Style="{StaticResource OutlineButton}" />
+
+            <Label Text="{x:Static s:AppResources.Field_Notes}" Style="{StaticResource SectionLabel}" />
+            <Editor Text="{Binding Notes}" AutoSize="TextChanges" MinimumHeightRequest="80" MaxLength="2000" />
+            <Button Text="{x:Static s:AppResources.Common_Save}" Command="{Binding SaveCommand}" Margin="0,12,0,0" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

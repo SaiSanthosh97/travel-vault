@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Publish/fetch encrypted messages and files through an ntfy server (free public ntfy.sh or self-hosted).
+         Copied from Use It Before's Core.Relay and put behind IRelay so sync can be tested with an in-memory relay. -->
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+</Project>

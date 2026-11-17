@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Works out which reminders to show and when. Scheduling them on Android is Device.Reminders' job. -->
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core.Documents\Core.Documents.csproj" />
+    <ProjectReference Include="..\Core.Travelers\Core.Travelers.csproj" />
+    <ProjectReference Include="..\Core.Trips\Core.Trips.csproj" />
+  </ItemGroup>
+
+</Project>

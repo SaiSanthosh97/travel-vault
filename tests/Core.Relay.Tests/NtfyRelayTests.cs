@@ -1,0 +1,119 @@
+using System.Net;
+using TravelVault.Core.Relay;
+
+namespace TravelVault.Core.Relay.Tests;
+
+public class NtfyRelayTests
+{
+    private sealed class Recorder(string responseBody) : HttpMessageHandler
+    {
+        public HttpRequestMessage? Request { get; private set; }
+
+        public string? Body { get; private set; }
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            Request = request;
+            Body = request.Content is null ? null : await request.Content.ReadAsStringAsync(cancellationToken);
+            return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(responseBody) };
+        }
+    }
+
+    private static readonly Uri Server = new("https://ntfy.sh");
+
+    [Fact]
+    public async Task Publish_posts_text_to_the_topic_without_firebase()
+    {
+        var handler = new Recorder("""{"id":"abc123","time":1,"event":"message","topic":"tvtopic","message":"x"}""");
+        var relay = new NtfyRelay(new HttpClient(handler), Server, "TravelVault");
+
+        var id = await relay.PublishAsync("tvtopic", "1.sealed");
+
+        Assert.Equal("abc123", id);
+        Assert.Equal(HttpMethod.Post, handler.Request!.Method);
+        Assert.Equal("https://ntfy.sh/tvtopic", handler.Request.RequestUri!.ToString());
+        Assert.Equal("1.sealed", handler.Body);
+        Assert.Equal("no", handler.Request.Headers.GetValues("X-Firebase").Single());
+    }
+
+    [Fact]
+    public async Task Fetch_asks_for_messages_since_the_last_seen_id_and_keeps_only_messages()
+    {
+        var handler = new Recorder(
+            """
+            {"id":"m1","time":1763100000,"event":"message","topic":"t","message":"first"}
+            {"id":"k1","time":1763100001,"event":"keepalive","topic":"t"}
+            not json
+            {"id":"m2","time":1763100002,"event":"message","topic":"t","message":"second"}
+            """);
+        var relay = new NtfyRelay(new HttpClient(handler), Server, "TravelVault");
+
+        var messages = await relay.FetchAsync("t", "m0");
+
+        Assert.Equal("https://ntfy.sh/t/json?poll=1&since=m0", handler.Request!.RequestUri!.ToString());
+        Assert.Equal(["first", "second"], messages.Select(m => m.Text));
+        Assert.Equal("m2", messages[^1].Id);
+    }
+
+    [Fact]
+    public async Task Fetch_reads_attachment_links()
+    {
+        var handler = new Recorder(
+            """{"id":"a1","time":1,"event":"message","topic":"t","message":"1.x","attachment":{"name":"data.bin","size":5,"url":"https://ntfy.sh/file/a1.bin"}}""");
+        var relay = new NtfyRelay(new HttpClient(handler), Server, "TravelVault");
+
+        var message = Assert.Single(await relay.FetchAsync("t", null));
+
+        Assert.Equal(new Uri("https://ntfy.sh/file/a1.bin"), message.AttachmentUrl);
+    }
+
+    [Fact]
+    public async Task Publish_file_sends_bytes_with_the_text_in_a_header()
+    {
+        var handler = new Recorder("""{"id":"f1","time":1,"event":"message"}""");
+        var relay = new NtfyRelay(new HttpClient(handler), Server, "TravelVault");
+
+        await relay.PublishFileAsync("t", [1, 2, 3], "1.sealed");
+
+        Assert.Equal(HttpMethod.Put, handler.Request!.Method);
+        Assert.Equal("1.sealed", handler.Request.Headers.GetValues("Message").Single());
+        Assert.Equal("no", handler.Request.Headers.GetValues("X-Firebase").Single());
+    }
+
+    [Theory]
+    [InlineData("https://evil.example/file/a.bin")]
+    [InlineData("http://ntfy.sh/file/a.bin")]
+    public async Task Download_only_follows_links_on_the_relay_server(string url)
+    {
+        var relay = new NtfyRelay(new HttpClient(new Recorder("")), Server, "TravelVault");
+        await Assert.ThrowsAsync<ArgumentException>(() => relay.DownloadAsync(new Uri(url)));
+    }
+
+    [Fact]
+    public async Task Fetch_without_a_valid_since_gets_everything_kept()
+    {
+        var handler = new Recorder("");
+        var relay = new NtfyRelay(new HttpClient(handler), Server, "TravelVault");
+
+        await relay.FetchAsync("t", "../../etc");
+
+        Assert.EndsWith("since=all", handler.Request!.RequestUri!.ToString());
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("a/b")]
+    [InlineData("a b")]
+    public async Task Rejects_bad_topic_names(string topic)
+    {
+        var relay = new NtfyRelay(new HttpClient(new Recorder("")), Server, "TravelVault");
+        await Assert.ThrowsAsync<ArgumentException>(() => relay.PublishAsync(topic, "x"));
+    }
+
+    [Fact]
+    public async Task Rejects_messages_that_are_too_long()
+    {
+        var relay = new NtfyRelay(new HttpClient(new Recorder("")), Server, "TravelVault");
+        await Assert.ThrowsAsync<ArgumentException>(() => relay.PublishAsync("t", new string('x', NtfyRelay.MaxMessageLength + 1)));
+    }
+}

@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="../../src/Components/Core.Parsing/Core.Parsing.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../samples/synthetic/*.txt" LinkBase="samples" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

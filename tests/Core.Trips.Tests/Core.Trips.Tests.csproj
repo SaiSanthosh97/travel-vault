@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="../../src/Components/Core.Trips/Core.Trips.csproj" />
+    <ProjectReference Include="../../src/Components/Core.Duplicates/Core.Duplicates.csproj" />
+  </ItemGroup>
+
+</Project>

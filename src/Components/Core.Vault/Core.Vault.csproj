@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Application layer: the use cases (import, edit, merge, trips, travelers, search, setup) that coordinate the
+         domain components. Plain .NET, so every use case is unit-tested without a phone. -->
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core.Common\Core.Common.csproj" />
+    <ProjectReference Include="..\Core.Security\Core.Security.csproj" />
+    <ProjectReference Include="..\Core.Documents\Core.Documents.csproj" />
+    <ProjectReference Include="..\Core.Travelers\Core.Travelers.csproj" />
+    <ProjectReference Include="..\Core.Families\Core.Families.csproj" />
+    <ProjectReference Include="..\Core.Parsing\Core.Parsing.csproj" />
+    <ProjectReference Include="..\Core.Duplicates\Core.Duplicates.csproj" />
+    <ProjectReference Include="..\Core.Trips\Core.Trips.csproj" />
+    <ProjectReference Include="..\Core.Search\Core.Search.csproj" />
+    <ProjectReference Include="..\Core.Reminders\Core.Reminders.csproj" />
+  </ItemGroup>
+
+</Project>

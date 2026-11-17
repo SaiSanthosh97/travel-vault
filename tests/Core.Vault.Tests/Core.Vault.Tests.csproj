@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Use-case tests: real encrypted database and file vault in a temp folder, fake OCR/barcode/PDF rendering. -->
+  <ItemGroup>
+    <ProjectReference Include="../../src/Components/Core.Vault/Core.Vault.csproj" />
+    <ProjectReference Include="../../src/Components/Storage.Sqlite/Storage.Sqlite.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../samples/synthetic/*.txt" LinkBase="samples" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>
