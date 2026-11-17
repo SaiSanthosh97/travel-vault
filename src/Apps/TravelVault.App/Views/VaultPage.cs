@@ -46,7 +46,7 @@ public class VaultPage : ContentPage
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             Android.Util.Log.Error("TravelVault", $"{GetType().Name} failed to load: {ex}");
-            Dialogs.Toast(Resources.Strings.AppResources.Common_LoadFailed);
+            Dialogs.Toast(global::TravelVault.App.Resources.Strings.AppResources.Common_LoadFailed);
         }
     }
 
