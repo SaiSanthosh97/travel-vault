@@ -20,7 +20,7 @@ The MVP is the full first release I will implement after sign-off. "In" means bu
 | Access | In-app viewer (PDF + images), fetch-on-view, Save to phone, Share |
 | Sync | ntfy relay (configurable URL), signed + encrypted envelopes, HLC merge, chunked files, state/file requests, background job, outbox |
 | Security | Everything in [07-Security-Model](07-Security-Model.md) incl. app lock, encrypted DB/files, FLAG_SECURE, no Android backup, strict mode |
-| Backup | Encrypted export/import with recovery code |
+| Backup | ~~Encrypted export/import with recovery code~~ (removed by C-020) |
 | Updates | GitHub Releases check + verified download (from Use It Before) |
 | UI | Material 3, Use It Before palette, light/dark, font scaling, TalkBack labels |
 | Quality | xUnit tests per Core component + Storage; synthetic ticket fixtures in `samples/`; GitHub Actions CI building and testing (APK build job included) |

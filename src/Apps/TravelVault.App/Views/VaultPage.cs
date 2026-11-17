@@ -30,7 +30,24 @@ public class VaultPage : ContentPage
         _visible = true;
         Host.Changed += OnVaultChanged;
         Services.Activity.SetSecure(Secure, Settings);
-        await LoadAsync();
+        await SafeLoadAsync();
+    }
+
+    /// <summary>
+    /// OnAppearing is "async void": an exception there would crash the whole app. A screen that fails to load
+    /// shows a message instead and is logged, so the rest of the app keeps working.
+    /// </summary>
+    private async Task SafeLoadAsync()
+    {
+        try
+        {
+            await LoadAsync();
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            Android.Util.Log.Error("TravelVault", $"{GetType().Name} failed to load: {ex}");
+            Dialogs.Toast(Resources.Strings.AppResources.Common_LoadFailed);
+        }
     }
 
     protected override void OnDisappearing()
@@ -47,7 +64,7 @@ public class VaultPage : ContentPage
     {
         if (_visible && change.FromSync)
         {
-            await LoadAsync();
+            await SafeLoadAsync();
         }
     }
 }

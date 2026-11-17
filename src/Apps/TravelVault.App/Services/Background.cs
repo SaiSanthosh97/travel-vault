@@ -21,7 +21,6 @@ public sealed class ReminderService(VaultHost host, AppSettings settings)
         try
         {
             var s = host.Services;
-            var lastBackup = await s.Backup.LastBackupAsync();
             var options = ReminderSettings.Default with { AllFamilyTravel = settings.AllFamilyReminders };
             var all = new List<ScheduledReminder>();
             foreach (var family in await s.Families.ListAsync())
@@ -37,18 +36,8 @@ public sealed class ReminderService(VaultHost host, AppSettings settings)
                     s.Session.MemberId,
                     options,
                     s.Session.Now,
-                    TimeZoneInfo.Local,
-                    lastBackup,
-                    family.Id);
+                    TimeZoneInfo.Local);
                 all.AddRange(plan.Select(r => new ScheduledReminder(r.Key, r.FireAtUtc, r.Title, r.Body, r.DocumentId)));
-            }
-
-            // One backup reminder for the whole phone, not one per family.
-            var backups = all.Where(r => r.Key.StartsWith("backup:", StringComparison.Ordinal)).ToList();
-            all.RemoveAll(r => r.Key.StartsWith("backup:", StringComparison.Ordinal));
-            if (backups.Count > 0)
-            {
-                all.Add(backups.MinBy(r => r.FireAtUtc)! with { Key = "backup" });
             }
 
             TravelReminders.ScheduleAll(all);

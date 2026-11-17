@@ -1,5 +1,7 @@
 # 1. Product Requirements Document — Family Travel Vault
 
+> **Changed by C-020 (2026-11-17):** backup, restore and the recovery code were removed at the user's request. A new phone gets its data back by rejoining the family. Anything below about backups or the recovery code no longer applies.
+
 Status: **Draft for sign-off** · 2026-11-16 · Source of decisions: [Requirements.md](../Requirements.md) (D1–D52)
 
 ## 1.1 Vision

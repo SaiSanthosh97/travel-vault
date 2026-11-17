@@ -1,4 +1,3 @@
-using TravelVault.Core.Backup;
 using TravelVault.Core.Parsing;
 using TravelVault.Core.Relay;
 using TravelVault.Core.Security;
@@ -42,7 +41,6 @@ public sealed class AppServices : IDisposable
         Sync = new FamilySync(Session, Families, Documents, TravelerRepository, Trips, DocumentService, Travelers, FileKeys, Files, SyncStore, Settings,
             new NtfyRelayFactory(http, "TravelVault"), Events, vault.IncomingFolder);
         requester.Target = Sync;
-        Backup = new BackupService(Session, Families, TravelerRepository, Documents, Trips, SyncStore, Settings, DocumentService, Identity);
 
         Events.Add(Sync);      // signs and queues local changes
         Events.Add(uiHandler); // refreshes screens, re-plans reminders, sends soon
@@ -87,8 +85,6 @@ public sealed class AppServices : IDisposable
     public TripService TripService { get; }
 
     public FamilySync Sync { get; }
-
-    public BackupService Backup { get; }
 
     public void Dispose() => Vault.Dispose();
 

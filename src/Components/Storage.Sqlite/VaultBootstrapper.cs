@@ -1,4 +1,3 @@
-using TravelVault.Core.Backup;
 using TravelVault.Core.Common;
 using TravelVault.Core.Security;
 using TravelVault.Core.Vault;
@@ -18,8 +17,6 @@ public sealed class OpenedVault(VaultSession session, VaultDatabase database, st
 
     public string IncomingFolder => Path.Combine(Folder, "incoming");
 
-    public string ViewCacheFolder => Path.Combine(Folder, "view-cache");
-
     public void Dispose()
     {
         Database.Dispose();
@@ -29,8 +26,9 @@ public sealed class OpenedVault(VaultSession session, VaultDatabase database, st
 }
 
 /// <summary>
-/// First launch, every launch and restore. The only thing on disk outside the encrypted database is the device
-/// master key wrapped by the platform key vault (Android Keystore) in <c>dmk.bin</c>.
+/// First launch, every launch and "erase everything". The only thing on disk outside the encrypted database is the
+/// device master key wrapped by the platform key vault (Android Keystore) in <c>dmk.bin</c>.
+/// There is no backup/restore (C-020): a new phone gets its data back by rejoining the family.
 /// </summary>
 public sealed class VaultBootstrapper(string folder, IKeyVault keyVault, IClock clock)
 {
@@ -40,8 +38,8 @@ public sealed class VaultBootstrapper(string folder, IKeyVault keyVault, IClock 
 
     public bool IsSetUp => File.Exists(DmkPath) && File.Exists(DbPath);
 
-    /// <summary>New phone: master key, database, device keys and recovery code (shown once to the user).</summary>
-    public async Task<(OpenedVault Vault, RecoveryCode Code)> CreateAsync(string displayName, CancellationToken cancellationToken = default)
+    /// <summary>New phone: master key, database and device keys.</summary>
+    public async Task<OpenedVault> CreateAsync(string displayName, CancellationToken cancellationToken = default)
     {
         var name = displayName.Trim();
         if (name.Length == 0)
@@ -49,15 +47,12 @@ public sealed class VaultBootstrapper(string folder, IKeyVault keyVault, IClock 
             throw new ArgumentException("Please enter your name.", nameof(displayName));
         }
 
-        var keys = DeviceKeyPair.Create();
+        using var keys = DeviceKeyPair.Create();
         var (signing, agreement) = keys.ExportPrivate();
-        var code = RecoveryCode.Generate();
-        var vault = await CreateVaultAsync(new DeviceIdentity(Ids.New(), name, signing, agreement), cancellationToken);
-        await new DeviceIdentityStore(new SqliteSettings(vault.Database), vault.Session.KeyRing).SaveRecoveryCodeAsync(code, cancellationToken);
-        return (vault, code);
+        return await CreateVaultAsync(new DeviceIdentity(Ids.New(), name, signing, agreement), cancellationToken);
     }
 
-    /// <returns>The vault, or null if the master key can't be unwrapped (e.g. the Keystore key was lost): offer restore.</returns>
+    /// <returns>The vault, or null if the master key can't be unwrapped (e.g. the Keystore key was lost): offer to start over.</returns>
     public async Task<OpenedVault?> UnlockAsync(CancellationToken cancellationToken = default)
     {
         if (!IsSetUp || KeyRing.Unlock(keyVault, await File.ReadAllBytesAsync(DmkPath, cancellationToken)) is not { } ring)
@@ -87,37 +82,27 @@ public sealed class VaultBootstrapper(string folder, IKeyVault keyVault, IClock 
         return new OpenedVault(new VaultSession(identity.MemberId, identity.DisplayName, ring, identity.ToKeyPair(), clock), db, folder);
     }
 
-    /// <summary>
-    /// Restores a backup onto this phone (replacing anything here). The phone continues as the same family member
-    /// (same member id and device keys), so family phones keep trusting it; then a sync fills in anything newer.
-    /// </summary>
-    /// <exception cref="WrongRecoveryCodeException">Wrong code.</exception>
-    public async Task<OpenedVault> RestoreAsync(Stream backupFile, RecoveryCode code, CancellationToken cancellationToken = default)
-    {
-        using var backup = await BackupFormat.OpenAsync(backupFile, code, cancellationToken);
-        var m = backup.Manifest;
-        Wipe();
-        var vault = await CreateVaultAsync(new DeviceIdentity(m.MemberId, m.DisplayName, m.SigningPrivateKey, m.AgreementPrivateKey), cancellationToken);
-        var settings = new SqliteSettings(vault.Database);
-        var identity = new DeviceIdentityStore(settings, vault.Session.KeyRing);
-        await identity.SaveRecoveryCodeAsync(code, cancellationToken);
-
-        var documents = new SqliteDocumentRepository(vault.Database);
-        var travelers = new SqliteTravelerRepository(vault.Database);
-        var fileKeys = new SqliteFileKeyStore(vault.Database);
-        var search = new SearchService(new SqliteSearchIndex(vault.Database), documents, travelers);
-        var documentService = new DocumentService(vault.Session, documents, new FileVault(vault.FilesFolder), fileKeys, NoRequests.Instance, new VaultEvents([]));
-        var service = new BackupService(vault.Session, new SqliteFamilyRepository(vault.Database), travelers, documents, new SqliteTripRepository(vault.Database),
-            new SqliteSyncStore(vault.Database), settings, documentService, identity);
-        await service.ImportAsync(backup, search, cancellationToken);
-        return vault;
-    }
-
     /// <summary>"Erase everything": destroys the Keystore key (all data becomes unreadable at once), then deletes the files.</summary>
     public void EraseEverything()
     {
         keyVault.Destroy();
-        Wipe();
+        Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+        if (!Directory.Exists(folder))
+        {
+            return;
+        }
+
+        foreach (var entry in Directory.EnumerateFileSystemEntries(folder))
+        {
+            if (Directory.Exists(entry))
+            {
+                Directory.Delete(entry, recursive: true);
+            }
+            else
+            {
+                File.Delete(entry);
+            }
+        }
     }
 
     private async Task<OpenedVault> CreateVaultAsync(DeviceIdentity identity, CancellationToken cancellationToken)
@@ -128,31 +113,5 @@ public sealed class VaultBootstrapper(string folder, IKeyVault keyVault, IClock 
         var db = VaultDatabase.Open(DbPath, ring.DatabaseKey());
         await new DeviceIdentityStore(new SqliteSettings(db), ring).SaveAsync(identity, cancellationToken);
         return new OpenedVault(new VaultSession(identity.MemberId, identity.DisplayName, ring, identity.ToKeyPair(), clock), db, folder);
-    }
-
-    private void Wipe()
-    {
-        Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
-        if (Directory.Exists(folder))
-        {
-            foreach (var entry in Directory.EnumerateFileSystemEntries(folder))
-            {
-                if (Directory.Exists(entry))
-                {
-                    Directory.Delete(entry, recursive: true);
-                }
-                else
-                {
-                    File.Delete(entry);
-                }
-            }
-        }
-    }
-
-    private sealed class NoRequests : IFileRequester
-    {
-        public static readonly NoRequests Instance = new();
-
-        public Task RequestAsync(string familyId, string fileVersionId, CancellationToken cancellationToken = default) => Task.CompletedTask;
     }
 }

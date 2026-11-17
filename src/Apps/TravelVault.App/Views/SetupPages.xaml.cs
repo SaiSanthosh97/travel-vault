@@ -35,18 +35,6 @@ public partial class WelcomePage : ContentPage
     }
 }
 
-public partial class RecoveryCodePage : VaultPage
-{
-    public RecoveryCodePage(RecoveryCodeViewModel viewModel)
-    {
-        InitializeComponent();
-        Secure = true;
-        BindingContext = viewModel;
-    }
-
-    protected override Task LoadAsync() => ((RecoveryCodeViewModel)BindingContext).LoadAsync();
-}
-
 /// <summary>Shown over everything until the user unlocks with fingerprint/face or the phone's PIN.</summary>
 public sealed class LockPage : ContentPage
 {

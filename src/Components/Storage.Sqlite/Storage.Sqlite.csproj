@@ -19,7 +19,6 @@
     <ProjectReference Include="..\Core.Search\Core.Search.csproj" />
     <ProjectReference Include="..\Core.Vault\Core.Vault.csproj" />
     <ProjectReference Include="..\Core.Sync\Core.Sync.csproj" />
-    <ProjectReference Include="..\Core.Backup\Core.Backup.csproj" />
   </ItemGroup>
 
 </Project>

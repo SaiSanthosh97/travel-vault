@@ -75,7 +75,7 @@ public class ReminderPlannerTests
         var deleted = Flight(new DateTime(2026, 12, 20, 6, 10, 0), Rahul);
         deleted.Delete(Now);
         var plan = ReminderPlanner.Plan([past, deleted], Travelers, "rahul-phone", ReminderSettings.Default, Now, India);
-        Assert.DoesNotContain(plan, r => r.Kind != ReminderKind.Backup);
+        Assert.Empty(plan);
     }
 
     [Fact]

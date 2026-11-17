@@ -14,7 +14,7 @@ One document per implemented feature (D55). Each explains **what** was built, **
 | [TD-08](TD-08-Search.md) | Global search with FTS5, city aliases, safe queries, ranking | `Core.Search`, `Storage.Sqlite` | Implemented |
 | [TD-09](TD-09-Reminder-Planning.md) | Offline reminder planning with stable keys | `Core.Reminders` | Implemented |
 | [TD-10](TD-10-Serverless-Sync.md) | Serverless sync: wire format, signed changes, cycle, conflicts, 12-hour window, files, joins, removal & key rotation | `Core.Sync`, `Core.Relay` | Implemented |
-| [TD-11](TD-11-Backup-and-First-Launch.md) | First launch, unlock, encrypted backup & restore, erase everything | `Core.Backup`, `Storage.Sqlite`, `Core.Vault` | Implemented |
+| [TD-11](TD-11-Backup-and-First-Launch.md) | First launch, unlock, erase everything (backup & restore removed by C-020) | `Storage.Sqlite`, `Core.Vault` | Partly superseded |
 | [TD-12](TD-12-Android-App.md) | The Android app: screens, composition, share target, lock, reminders, background sync, device components | `TravelVault.App`, `Device.*` | Implemented |
 
 ## How to use these documents for an interview

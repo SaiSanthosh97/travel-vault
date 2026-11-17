@@ -44,12 +44,6 @@ public sealed class AppSettings
         set => P.Set("reminders.allFamily", value);
     }
 
-    public bool RecoveryCodeConfirmed
-    {
-        get => P.Get("setup.recoveryConfirmed", false);
-        set => P.Set("setup.recoveryConfirmed", value);
-    }
-
     public DateTimeOffset? LastUpdateCheck
     {
         get => P.Get("update.lastCheck", 0L) is var ms and > 0 ? DateTimeOffset.FromUnixTimeMilliseconds(ms) : null;

@@ -1,5 +1,7 @@
 # 7. Security Model
 
+> **Changed by C-020 (2026-11-17):** backup, restore and the recovery code were removed at the user's request. A new phone gets its data back by rejoining the family. Anything below about backups or the recovery code no longer applies.
+
 > **Implemented (2026-11-17).** Refinements: C-009 (rotation after removal and after a self-leave), C-010 (one-time proof in QR invites), C-012 (restore keeps the member identity, sequence numbers jump ahead). Details: [technical/TD-02](technical/TD-02-Security-and-Keys.md), [TD-10](technical/TD-10-Serverless-Sync.md), [TD-11](technical/TD-11-Backup-and-First-Launch.md).
 
 Goal: **more secure than Use It Before** (D52). Use It Before already has end-to-end encryption, but stores its family key and database unencrypted, has no app lock, and allows Android backup. Travel Vault closes all of those gaps.

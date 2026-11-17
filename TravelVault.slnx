@@ -4,7 +4,6 @@
   </Folder>
   <Folder Name="/Components/">
     <Project Path="src/Components/Core.AppUpdater/Core.AppUpdater.csproj" />
-    <Project Path="src/Components/Core.Backup/Core.Backup.csproj" />
     <Project Path="src/Components/Core.Common/Core.Common.csproj" />
     <Project Path="src/Components/Core.Documents/Core.Documents.csproj" />
     <Project Path="src/Components/Core.Duplicates/Core.Duplicates.csproj" />
@@ -27,7 +26,6 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Core.AppUpdater.Tests/Core.AppUpdater.Tests.csproj" />
-    <Project Path="tests/Core.Backup.Tests/Core.Backup.Tests.csproj" />
     <Project Path="tests/Core.Common.Tests/Core.Common.Tests.csproj" />
     <Project Path="tests/Core.Documents.Tests/Core.Documents.Tests.csproj" />
     <Project Path="tests/Core.Families.Tests/Core.Families.Tests.csproj" />

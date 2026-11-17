@@ -18,8 +18,8 @@
 
 		<!-- ApplicationDisplayVersion must match the GitHub release tag (v0.1.0) for update checks.
 		     ApplicationVersion must go up by one with every release. -->
-		<ApplicationDisplayVersion>0.1.0</ApplicationDisplayVersion>
-		<ApplicationVersion>1</ApplicationVersion>
+		<ApplicationDisplayVersion>0.1.1</ApplicationDisplayVersion>
+		<ApplicationVersion>2</ApplicationVersion>
 
 		<SupportedOSPlatformVersion>26.0</SupportedOSPlatformVersion>
 		<!-- Phones are ARM64; -p:EmulatorBuild=true builds the Release app for the x86-64 emulator. -->
@@ -48,7 +48,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\Components\Core.Vault\Core.Vault.csproj" />
 		<ProjectReference Include="..\..\Components\Core.Sync\Core.Sync.csproj" />
-		<ProjectReference Include="..\..\Components\Core.Backup\Core.Backup.csproj" />
 		<ProjectReference Include="..\..\Components\Core.AppUpdater\Core.AppUpdater.csproj" />
 		<ProjectReference Include="..\..\Components\Storage.Sqlite\Storage.Sqlite.csproj" />
 		<ProjectReference Include="..\..\Components\Device.Vision\Device.Vision.csproj" />

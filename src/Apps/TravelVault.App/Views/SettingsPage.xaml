@@ -52,15 +52,6 @@
                     <Button Grid.Column="1" Text="{x:Static s:AppResources.Settings_Fix}" Style="{StaticResource LinkButton}" Command="{Binding FixRemindersCommand}" />
                 </Grid>
 
-                <!-- Backup -->
-                <Label Text="{x:Static s:AppResources.Settings_Backup}" Style="{StaticResource SectionLabel}" />
-                <Label Text="{Binding BackupStatus}" />
-                <Label Text="{x:Static s:AppResources.Settings_BackupHelp}" Style="{StaticResource Subtle}" />
-                <Button Text="{x:Static s:AppResources.Settings_BackupDownloads}" Command="{Binding BackupToDownloadsCommand}" />
-                <Button Text="{x:Static s:AppResources.Settings_BackupShare}" Command="{Binding ShareBackupCommand}" Style="{StaticResource OutlineButton}" />
-                <Button Text="{x:Static s:AppResources.Settings_ShowCode}" Command="{Binding ShowRecoveryCodeCommand}" Style="{StaticResource OutlineButton}" />
-                <Button Text="{x:Static s:AppResources.Settings_Restore}" Command="{Binding RestoreCommand}" Style="{StaticResource OutlineButton}" />
-
                 <!-- Vault -->
                 <Label Text="{x:Static s:AppResources.Settings_Vault}" Style="{StaticResource SectionLabel}" />
                 <Label Text="{Binding StorageText}" />

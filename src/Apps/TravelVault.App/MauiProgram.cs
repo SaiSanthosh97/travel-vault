@@ -42,8 +42,6 @@ public static class MauiProgram
         services.AddTransient<StartPage>();
         services.AddTransient<WelcomeViewModel>();
         services.AddTransient<WelcomePage>();
-        services.AddTransient<RecoveryCodeViewModel>();
-        services.AddTransient<RecoveryCodePage>();
         services.AddSingleton<HomeViewModel>();
         services.AddSingleton<HomePage>();
         services.AddSingleton<TripsViewModel>();

@@ -22,7 +22,7 @@
                 <Button Text="{x:Static s:AppResources.Welcome_Start}" Command="{Binding CreateCommand}" Margin="0,8,0,0" />
 
                 <Label Text="{x:Static s:AppResources.Welcome_NewPhone}" Style="{StaticResource SectionLabel}" Margin="0,24,0,0" />
-                <Button Text="{x:Static s:AppResources.Welcome_Restore}" Command="{Binding RestoreCommand}" Style="{StaticResource OutlineButton}" />
+                <Label Text="{x:Static s:AppResources.Welcome_NewPhoneHelp}" Style="{StaticResource Subtle}" />
                 <Label Text="{x:Static s:AppResources.Welcome_Privacy}" Style="{StaticResource Subtle}" Margin="0,16,0,0" />
             </VerticalStackLayout>
         </ScrollView>

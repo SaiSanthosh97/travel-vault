@@ -18,6 +18,7 @@
   <data name="Common_Done" xml:space="preserve"><value>Done</value></data>
   <data name="Common_NotNow" xml:space="preserve"><value>Not now</value></data>
   <data name="Common_Save" xml:space="preserve"><value>Save</value></data>
+  <data name="Common_LoadFailed" xml:space="preserve"><value>Something went wrong showing this screen. Please try again.</value></data>
   <data name="Common_TryAgain" xml:space="preserve"><value>Try again</value></data>
   <data name="Add_Title" xml:space="preserve"><value>Add a document</value></data>
   <data name="Add_Camera" xml:space="preserve"><value>Take a photo of a ticket</value></data>
@@ -55,17 +56,12 @@
   <data name="Welcome_NameNeeded" xml:space="preserve"><value>Please enter your name.</value></data>
   <data name="Welcome_Start" xml:space="preserve"><value>Get started</value></data>
   <data name="Welcome_NewPhone" xml:space="preserve"><value>New phone?</value></data>
-  <data name="Welcome_Restore" xml:space="preserve"><value>Restore from a backup</value></data>
+  <data name="Welcome_NewPhoneHelp" xml:space="preserve"><value>Set up with your name, then join your family again (Family → Join a family). All your family's documents sync back to this phone.</value></data>
   <data name="Welcome_Privacy" xml:space="preserve"><value>Everything is encrypted on this phone. Family sync is end-to-end encrypted; nobody else can read your documents.</value></data>
-  <data name="Welcome_KeyLost" xml:space="preserve"><value>This phone&apos;s security key is gone (for example after a reset), so the old data can&apos;t be opened. Restore a backup, or start over.</value></data>
+  <data name="Welcome_KeyLost" xml:space="preserve"><value>This phone's security key is gone (for example after a reset), so the old data can't be opened. Start over, then join your family again to get everything back.</value></data>
   <data name="Welcome_StartOverTitle" xml:space="preserve"><value>Start over?</value></data>
-  <data name="Welcome_StartOverText" xml:space="preserve"><value>The unreadable old data on this phone will be deleted. If you&apos;re in a family, you can rejoin and get everything back from the other phones.</value></data>
+  <data name="Welcome_StartOverText" xml:space="preserve"><value>The unreadable old data on this phone will be deleted. Join your family again afterwards and everything syncs back from the other phones.</value></data>
   <data name="Welcome_StartOver" xml:space="preserve"><value>Start over</value></data>
-  <data name="Recovery_Title" xml:space="preserve"><value>Your recovery code</value></data>
-  <data name="Recovery_Intro" xml:space="preserve"><value>Write this code on paper and keep it somewhere safe. It&apos;s the only way to open your backup on a new phone.</value></data>
-  <data name="Recovery_Keep" xml:space="preserve"><value>Don&apos;t share it or keep a photo of it. You can see it again in Settings after unlocking the app.</value></data>
-  <data name="Recovery_WrittenDown" xml:space="preserve"><value>I&apos;ve written it down</value></data>
-  <data name="Recovery_Confirm" xml:space="preserve"><value>Please write the code down first, then tick the box.</value></data>
   <data name="Lock_Title" xml:space="preserve"><value>Unlock Travel Vault</value></data>
   <data name="Lock_Subtitle" xml:space="preserve"><value>Use your fingerprint, face or phone PIN</value></data>
   <data name="Lock_ConfirmTitle" xml:space="preserve"><value>Confirm it&apos;s you</value></data>
@@ -257,15 +253,6 @@
   <data name="Deleted_Help" xml:space="preserve"><value>Deleted documents are kept for 30 days. Tap one to restore it.</value></data>
   <data name="Deleted_Empty" xml:space="preserve"><value>Nothing here.</value></data>
   <data name="Deleted_Restored" xml:space="preserve"><value>Restored: {0}</value></data>
-  <data name="Restore_Title" xml:space="preserve"><value>Restore from backup</value></data>
-  <data name="Restore_Pick" xml:space="preserve"><value>Choose the backup file</value></data>
-  <data name="Restore_EnterCode" xml:space="preserve"><value>Enter your recovery code</value></data>
-  <data name="Restore_BadCode" xml:space="preserve"><value>That isn&apos;t a valid recovery code. Check for typos.</value></data>
-  <data name="Restore_WrongCode" xml:space="preserve"><value>This recovery code doesn&apos;t open the backup.</value></data>
-  <data name="Restore_NotBackup" xml:space="preserve"><value>This file isn&apos;t a Travel Vault backup.</value></data>
-  <data name="Restore_Done" xml:space="preserve"><value>Backup restored</value></data>
-  <data name="Restore_ReplaceWarning" xml:space="preserve"><value>Restoring replaces everything on this phone with the backup.</value></data>
-  <data name="Restore_Continue" xml:space="preserve"><value>Continue</value></data>
   <data name="Settings_YourName" xml:space="preserve"><value>Your name</value></data>
   <data name="Settings_Security" xml:space="preserve"><value>Security</value></data>
   <data name="Settings_AppLock" xml:space="preserve"><value>App lock</value></data>
@@ -287,14 +274,6 @@
   <data name="Settings_NotificationsOff" xml:space="preserve"><value>Notifications are off for Travel Vault</value></data>
   <data name="Settings_NotOnTime" xml:space="preserve"><value>Reminders may be a few minutes late</value></data>
   <data name="Settings_Fix" xml:space="preserve"><value>Fix</value></data>
-  <data name="Settings_Backup" xml:space="preserve"><value>Backup</value></data>
-  <data name="Settings_BackupHelp" xml:space="preserve"><value>One encrypted file with everything. Keep it anywhere (your Google Drive, a PC, WhatsApp to yourself) — it opens only with your recovery code.</value></data>
-  <data name="Settings_LastBackup" xml:space="preserve"><value>Last backup {0}</value></data>
-  <data name="Settings_NoBackup" xml:space="preserve"><value>No backup yet</value></data>
-  <data name="Settings_BackupDownloads" xml:space="preserve"><value>Save backup to Downloads</value></data>
-  <data name="Settings_BackupShare" xml:space="preserve"><value>Share backup…</value></data>
-  <data name="Settings_ShowCode" xml:space="preserve"><value>Show recovery code</value></data>
-  <data name="Settings_Restore" xml:space="preserve"><value>Restore from a backup</value></data>
   <data name="Settings_Vault" xml:space="preserve"><value>Vault</value></data>
   <data name="Settings_Storage" xml:space="preserve"><value>Documents on this phone: {0}</value></data>
   <data name="Settings_App" xml:space="preserve"><value>App</value></data>
@@ -303,7 +282,7 @@
   <data name="Settings_About" xml:space="preserve"><value>About and licences</value></data>
   <data name="Settings_AboutText" xml:space="preserve"><value>Travel Vault is free and open source (MIT). No accounts, no ads, no tracking. Uses .NET MAUI (MIT), SQLite3 Multiple Ciphers (MIT), PdfPig (Apache-2.0), QRCoder (MIT), CommunityToolkit.Mvvm (MIT), Open Sans (OFL), Google ML Kit (on-device, free), airport data from mwgg/Airports (MIT), and the free ntfy.sh relay.</value></data>
   <data name="Settings_EraseTitle" xml:space="preserve"><value>Erase everything</value></data>
-  <data name="Settings_EraseText" xml:space="preserve"><value>All documents, keys and settings on this phone are destroyed. Without a backup this can&apos;t be undone. Family phones keep their copies.</value></data>
+  <data name="Settings_EraseText" xml:space="preserve"><value>All documents, keys and settings on this phone are destroyed. This can't be undone. Family phones keep their copies, so you can join again to get them back.</value></data>
   <data name="Settings_EraseConfirm" xml:space="preserve"><value>Erase</value></data>
   <data name="Settings_EraseType" xml:space="preserve"><value>Type ERASE to confirm</value></data>
   <data name="Settings_EraseWord" xml:space="preserve"><value>ERASE</value></data>

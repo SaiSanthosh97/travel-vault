@@ -92,62 +92,8 @@ public class DeviceKeyTests
     }
 }
 
-public class RecoveryCodeTests
+public class SafetyCodeTests
 {
-    [Fact]
-    public void Generated_code_displays_as_8_groups_and_parses_back()
-    {
-        var code = RecoveryCode.Generate();
-        var display = code.Display();
-        Assert.Equal(8, display.Split('-').Length);
-        Assert.True(RecoveryCode.TryParse(display, out var parsed));
-        Assert.Equal(code.Normalized, parsed!.Normalized);
-    }
-
-    [Fact]
-    public void Parsing_forgives_case_spaces_and_look_alike_letters()
-    {
-        var code = RecoveryCode.Generate();
-        var messy = code.Normalized.ToLowerInvariant().Replace('0', 'o').Replace('1', 'l');
-        messy = string.Join(" ", Enumerable.Range(0, 8).Select(i => messy.Substring(i * 4, 4)));
-        Assert.True(RecoveryCode.TryParse(messy, out var parsed));
-        Assert.Equal(code.Normalized, parsed!.Normalized);
-    }
-
-    [Fact]
-    public void A_typo_is_caught_by_the_check_characters()
-    {
-        // A changed character slips through only if the 10-bit check collides (1 in 1024),
-        // so out of 50 typos, at most a couple may pass (chance of 3+ is about 1 in 50,000).
-        var missed = 0;
-        for (var i = 0; i < 50; i++)
-        {
-            var original = RecoveryCode.Generate().Normalized;
-            var typo = (original[5] == 'A' ? 'B' : 'A');
-            var changed = original[..5] + typo + original[6..];
-            missed += RecoveryCode.TryParse(changed, out _) ? 1 : 0;
-        }
-
-        Assert.True(missed <= 2, $"{missed} of 50 typos were not detected.");
-        var code = RecoveryCode.Generate().Normalized;
-        Assert.False(RecoveryCode.TryParse(code[..^1], out _));
-        Assert.False(RecoveryCode.TryParse("", out _));
-        Assert.False(RecoveryCode.TryParse(code[..^1] + "U", out _));
-    }
-
-    [Fact]
-    public void Backup_key_depends_on_code_and_salt()
-    {
-        var code = RecoveryCode.Generate();
-        var salt = new byte[16];
-        var key = BackupKey.Derive(code, salt, iterations: 1000);
-        Assert.Equal(key, BackupKey.Derive(code, salt, iterations: 1000));
-        Assert.NotEqual(key, BackupKey.Derive(RecoveryCode.Generate(), salt, iterations: 1000));
-        var otherSalt = new byte[16];
-        otherSalt[0] = 1;
-        Assert.NotEqual(key, BackupKey.Derive(code, otherSalt, iterations: 1000));
-    }
-
     [Fact]
     public void Safety_code_is_six_digits_and_changes_if_a_key_is_swapped()
     {

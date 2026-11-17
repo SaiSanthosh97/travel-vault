@@ -1,5 +1,7 @@
 # 9. Future Scope
 
+> **Changed by C-020 (2026-11-17):** backup, restore and the recovery code were removed at the user's request. A new phone gets its data back by rejoining the family. Anything below about backups or the recovery code no longer applies.
+
 All items keep the zero-cost and no-server rules (D32, D40) unless marked otherwise.
 
 ## Next (after MVP)
@@ -25,3 +27,4 @@ All items keep the zero-cost and no-server rules (D32, D40) unless marked otherw
 | Optional AI parsing | Bring-your-own key or local model; off by default (D34 keeps the MVP free of AI) |
 | Live flight status | Free APIs are very limited; would need a paid one |
 | Family travel history / stats | Countries visited, trip timeline |
+| Encrypted backup file (optional) | Removed in C-020; could come back as a password-protected export if solo users ask for it |

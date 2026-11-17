@@ -139,3 +139,10 @@ A: `FLAG_SECURE` on the window while those pages are shown: passports, visas, pr
 
 **Q: Why did the debug APK crash on the emulator at first?**
 A: .NET for Android's Fast Deployment keeps assemblies out of the APK and pushes them separately during an IDE debug session. Installing that APK by hand leaves the runtime with no assemblies. Building with `EmbedAssembliesIntoApk=true` (or a release build) fixes it. It's a deployment detail, not an app bug.
+
+## Bug found after release: Settings crashed (C-021)
+In v0.1.0, opening Settings closed the app. Reproduced on the emulator; the stack trace pointed at `AndroidKeystoreVault.IsHardwareBacked`, which converted Android Java objects (`IKey` → `ISecretKey`, `IKeySpec` → `KeyInfo`) with C# casts. Java objects coming through .NET for Android bindings must be converted with `JavaCast<T>()`, because a C# cast only checks the .NET wrapper type and throws `InvalidCastException`. The check now uses `JavaCast` and returns "don't know" on any failure, since it only drives an informational label.
+
+A second, general fix: `ContentPage.OnAppearing` is `async void`, so any exception while a screen loads crashes the whole process. `VaultPage` now wraps every load in a try/catch that logs the error and shows "Something went wrong showing this screen", so one bad screen can never take the app down.
+
+**Interview angle:** "How do you stop one screen from crashing a mobile app?" Guard the async-void boundary (lifecycle events and command handlers), log with enough context to reproduce the problem, and fix the root cause found in the stack trace.

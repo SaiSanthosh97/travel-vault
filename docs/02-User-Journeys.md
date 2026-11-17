@@ -1,5 +1,7 @@
 # 2. User Journeys
 
+> **Changed by C-020 (2026-11-17):** backup, restore and the recovery code were removed at the user's request. A new phone gets its data back by rejoining the family. Anything below about backups or the recovery code no longer applies.
+
 Each journey lists the steps and what the app does behind the scenes. "Organizer", "Traveler" and similar names refer to the personas in [01-PRD](01-PRD.md#13-personas).
 
 ## J1 First launch and create a family

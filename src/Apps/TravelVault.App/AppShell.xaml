@@ -11,7 +11,6 @@
     <!-- Start: decides between first-launch setup, the lock screen and the main tabs. -->
     <ShellContent Route="start" ContentTemplate="{DataTemplate views:StartPage}" Shell.NavBarIsVisible="False" />
     <ShellContent Route="welcome" ContentTemplate="{DataTemplate views:WelcomePage}" Shell.NavBarIsVisible="False" />
-    <ShellContent Route="recovery" ContentTemplate="{DataTemplate views:RecoveryCodePage}" />
 
     <TabBar Route="main">
         <ShellContent Title="{x:Static s:AppResources.Tab_Home}" Route="home" ContentTemplate="{DataTemplate views:HomePage}">

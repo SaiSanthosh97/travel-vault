@@ -3,15 +3,12 @@ using CommunityToolkit.Mvvm.Input;
 using TravelVault.App.Resources.Strings;
 using TravelVault.App.Services;
 using TravelVault.App.Views;
-using TravelVault.Core.Backup;
-using TravelVault.Core.Security;
 using TravelVault.Device.BackgroundWork;
-using TravelVault.Device.Files;
 using TravelVault.Device.Reminders;
 
 namespace TravelVault.App.ViewModels;
 
-/// <summary>Security, reminders, backup and restore, storage, updates, about, erase everything.</summary>
+/// <summary>Security, reminders, storage, updates, about, erase everything.</summary>
 public sealed partial class SettingsViewModel(
     VaultHost host,
     AppSettings settings,
@@ -48,9 +45,6 @@ public sealed partial class SettingsViewModel(
     public partial string ReminderStatus { get; set; } = "";
 
     [ObservableProperty]
-    public partial string BackupStatus { get; set; } = "";
-
-    [ObservableProperty]
     public partial string StorageText { get; set; } = "";
 
     [ObservableProperty]
@@ -68,6 +62,18 @@ public sealed partial class SettingsViewModel(
     public async Task LoadAsync()
     {
         _loading = true;
+        try
+        {
+            await LoadCoreAsync();
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task LoadCoreAsync()
+    {
         var s = host.Services;
         YourName = s.Session.DisplayName;
         AppLock = settings.AppLock;
@@ -78,9 +84,6 @@ public sealed partial class SettingsViewModel(
         ReminderStatus = !TravelReminders.NotificationsAllowed ? AppResources.Settings_NotificationsOff
             : !TravelReminders.CanRingOnTime ? AppResources.Settings_NotOnTime
             : AppResources.Settings_RemindersOk;
-        BackupStatus = await s.Backup.LastBackupAsync() is { } last
-            ? string.Format(AppResources.Settings_LastBackup, Display.Ago(s.Session.Now - last))
-            : AppResources.Settings_NoBackup;
         var size = 0L;
         foreach (var family in await s.Families.ListAsync())
         {
@@ -90,7 +93,6 @@ public sealed partial class SettingsViewModel(
         StorageText = string.Format(AppResources.Settings_Storage, Display.Size(size));
         KeyText = host.HardwareBackedKey ? AppResources.Settings_KeyHardware : AppResources.Settings_KeySoftware;
         VersionText = string.Format(AppResources.Settings_Version, AppInfo.Current.VersionString);
-        _loading = false;
     }
 
     partial void OnAppLockChanged(bool value)
@@ -155,100 +157,6 @@ public sealed partial class SettingsViewModel(
             await host.Services.Identity.RenameAsync(name);
             host.Services.Session.DisplayName = name.Trim();
             YourName = name.Trim();
-        }
-    }
-
-    [RelayCommand]
-    private Task BackupToDownloadsAsync() => BackupAsync(share: false);
-
-    [RelayCommand]
-    private Task ShareBackupAsync() => BackupAsync(share: true);
-
-    private async Task BackupAsync(bool share)
-    {
-        IsBusy = true;
-        try
-        {
-            using var output = new MemoryStream();
-            await host.Services.Backup.ExportAsync(output);
-            var name = $"travel-vault-backup-{DateTime.Now:yyyy-MM-dd}.tvbackup";
-            if (share)
-            {
-                await FileActions.ShareBytesAsync(output.ToArray(), name, AppResources.Settings_Backup);
-            }
-            else
-            {
-                if (!OperatingSystem.IsAndroidVersionAtLeast(29) && await Permissions.RequestAsync<Permissions.StorageWrite>() != PermissionStatus.Granted)
-                {
-                    return;
-                }
-
-                Dialogs.Toast(string.Format(AppResources.File_Saved, await Downloads.SaveAsync(output.ToArray(), name, "application/octet-stream")));
-            }
-
-            await reminders.ReplanAsync(); // moves the "back up" reminder 30 days ahead
-            await LoadAsync();
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
-
-    [RelayCommand]
-    private async Task ShowRecoveryCodeAsync()
-    {
-        if (await lockService.ConfirmIdentityAsync())
-        {
-            await Nav.GoAsync("//recovery");
-        }
-    }
-
-    [RelayCommand]
-    private async Task RestoreAsync()
-    {
-        if (!await dialogs.ConfirmAsync(AppResources.Restore_Title, AppResources.Restore_ReplaceWarning, AppResources.Restore_Continue))
-        {
-            return;
-        }
-
-        var file = await FilePicker.Default.PickAsync(new PickOptions { PickerTitle = AppResources.Restore_Pick });
-        var text = file is null ? null : await dialogs.PromptAsync(AppResources.Restore_Title, AppResources.Restore_EnterCode, maxLength: 60);
-        if (file is null || text is null)
-        {
-            return;
-        }
-
-        if (!RecoveryCode.TryParse(text, out var code))
-        {
-            await dialogs.AlertAsync(AppResources.Restore_Title, AppResources.Restore_BadCode);
-            return;
-        }
-
-        IsBusy = true;
-        try
-        {
-            await using var stream = await file.OpenReadAsync();
-            using var copy = new MemoryStream();
-            await stream.CopyToAsync(copy);
-            copy.Position = 0;
-            await host.RestoreAsync(copy, code!);
-            settings.CurrentFamilyId = null;
-            Dialogs.Toast(AppResources.Restore_Done);
-            await reminders.ReplanAsync();
-            await Nav.HomeAsync();
-        }
-        catch (WrongRecoveryCodeException)
-        {
-            await dialogs.AlertAsync(AppResources.Restore_Title, AppResources.Restore_WrongCode);
-        }
-        catch (InvalidDataException)
-        {
-            await dialogs.AlertAsync(AppResources.Restore_Title, AppResources.Restore_NotBackup);
-        }
-        finally
-        {
-            IsBusy = false;
         }
     }
 

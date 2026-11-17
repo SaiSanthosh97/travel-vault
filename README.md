@@ -28,7 +28,6 @@ Requirements and decisions: [Requirements.md](Requirements.md) · Design: [docs/
 | [`Core.Vault`](src/Components/Core.Vault) | Application layer: import, documents, travelers, trips, search use cases |
 | [`Core.Relay`](src/Components/Core.Relay) | ntfy relay client (from Use It Before) |
 | [`Core.Sync`](src/Components/Core.Sync) | Serverless sync: signed encrypted messages, files, joins, key rotation |
-| [`Core.Backup`](src/Components/Core.Backup) | Encrypted backup file and restore |
 | [`Core.AppUpdater`](src/Components/Core.AppUpdater) | GitHub Releases update check (from Use It Before) |
 | [`Storage.Sqlite`](src/Components/Storage.Sqlite) | Encrypted SQLite (SQLite3 Multiple Ciphers), repositories, FTS5, bootstrapper |
 | [`Device.Vision`](src/Components/Device.Vision) | Android: ML Kit OCR + barcodes, PDF rendering |

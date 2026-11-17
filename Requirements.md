@@ -251,6 +251,7 @@ ntfy.sh keeps messages ~12h and files ~3h. A phone that is away longer sends a *
 
 | # | Topic | Decision |
 |---|-------|----------|
+| D57 | Backup & recovery code (supersedes D17, D47) | **No backup and no recovery code.** A new or reset phone gets its data back by rejoining the family; nothing to write down. Accepted risk: a solo user, or a family that loses every phone, loses the data. Backup reminders removed too. (C-020) |
 | D56 | Screenshots (supersedes D13) | **Screenshots are allowed everywhere.** FLAG_SECURE is applied only when the user turns on Strict mode (then on every screen). (C-017) |
 
 ## Status (2026-11-17)

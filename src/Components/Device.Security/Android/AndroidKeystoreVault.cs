@@ -3,6 +3,7 @@ using Android.Util;
 using Java.Security;
 using Javax.Crypto;
 using Javax.Crypto.Spec;
+using Android.Runtime;
 using TravelVault.Core.Security;
 
 namespace TravelVault.Device.Security;
@@ -68,13 +69,20 @@ public sealed class AndroidKeystoreVault(string alias = "travelvault_master_wrap
             return false;
         }
 
+        // Java objects must be converted with JavaCast, not a C# cast: a C# cast throws InvalidCastException
+        // (this crashed the Settings screen in 0.1.0). Only informational, so any failure just means "don't know".
         try
         {
             var factory = SecretKeyFactory.GetInstance(key.Algorithm, Provider)!;
-            var info = (KeyInfo)factory.GetKeySpec((ISecretKey)key, Java.Lang.Class.FromType(typeof(KeyInfo)))!;
+            var spec = factory.GetKeySpec(key.JavaCast<ISecretKey>(), Java.Lang.Class.FromType(typeof(KeyInfo)));
+            if (spec?.JavaCast<KeyInfo>() is not { } info)
+            {
+                return false;
+            }
+
             return OperatingSystem.IsAndroidVersionAtLeast(31) ? info.SecurityLevel != (int)KeyStoreSecurityLevel.Software : info.IsInsideSecureHardware;
         }
-        catch (GeneralSecurityException)
+        catch (Exception ex) when (ex is GeneralSecurityException or InvalidCastException or Java.Lang.Exception)
         {
             return false;
         }

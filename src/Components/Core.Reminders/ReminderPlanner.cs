@@ -11,7 +11,6 @@ public enum ReminderKind
     MissingBoardingPass,
     TripTomorrow,
     IdentityExpiry,
-    Backup,
 }
 
 /// <summary>
@@ -42,9 +41,7 @@ public static class ReminderPlanner
         string myMemberId,
         ReminderSettings settings,
         DateTimeOffset now,
-        TimeZoneInfo phoneZone,
-        DateTimeOffset? lastBackup = null,
-        string familyId = "")
+        TimeZoneInfo phoneZone)
     {
         var list = new List<PlannedReminder>();
         var live = documents.Where(d => !d.IsDeleted).ToList();
@@ -108,14 +105,6 @@ public static class ReminderPlanner
             }
         }
 
-        if (lastBackup is not null || live.Count > 0)
-        {
-            var due = (lastBackup ?? now).AddDays(30);
-            var at = new DateTimeOffset(due.Date.AddHours(10), phoneZone.GetUtcOffset(due.Date.AddHours(10)));
-            Add(list, $"backup:{familyId}", ReminderKind.Backup, at <= now ? now.AddMinutes(1) : at, now.AddSeconds(-1),
-                "Back up your travel vault", "Save an encrypted backup so nothing is lost if your phone is.", null, familyId);
-        }
-
         return list.OrderBy(r => r.FireAtUtc).ToList();
     }
 
@@ -144,11 +133,11 @@ public static class ReminderPlanner
         || doc.OwnerMemberId == me
         || doc.AllTravelerIds().Any(t => travelers.TryGetValue(t, out var traveler) && traveler.LinkedMemberId == me);
 
-    private static void Add(List<PlannedReminder> list, string key, ReminderKind kind, DateTimeOffset at, DateTimeOffset now, string title, string body, TravelDocument? doc, string familyId = "")
+    private static void Add(List<PlannedReminder> list, string key, ReminderKind kind, DateTimeOffset at, DateTimeOffset now, string title, string body, TravelDocument? doc)
     {
         if (at > now)
         {
-            list.Add(new PlannedReminder(key, kind, at, title, body, doc?.Id, doc?.FamilyId ?? familyId));
+            list.Add(new PlannedReminder(key, kind, at, title, body, doc?.Id, doc?.FamilyId ?? ""));
         }
     }
 

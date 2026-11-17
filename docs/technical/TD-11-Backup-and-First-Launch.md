@@ -1,5 +1,7 @@
 # TD-11 · Backup, Restore and First Launch
 
+> **Superseded by C-020 (2026-11-17).** Backup, restore and the recovery code were removed from the product, and `Core.Backup` was deleted. The first-launch and unlock parts still apply (`VaultBootstrapper.CreateAsync` no longer creates a recovery code; there is no `RestoreAsync`). Kept for the record and for interview discussion: it shows a design that was built, tested and then deliberately removed for simplicity.
+
 ## Summary
 `VaultBootstrapper` (Storage.Sqlite) handles four moments:
 - **first launch:** master key, database, device keys and recovery code;

@@ -1,5 +1,4 @@
 using TravelVault.Core.Common;
-using TravelVault.Core.Security;
 using TravelVault.Core.Vault;
 using TravelVault.Device.BackgroundWork;
 using TravelVault.Device.Security;
@@ -9,7 +8,7 @@ namespace TravelVault.App.Services;
 
 /// <summary>
 /// Owns the vault for the whole app process: create (first launch), unlock (every start — also in the background
-/// for sync and reminders, which needs no user action because the Keystore key isn't auth-bound), restore, erase.
+/// for sync and reminders, which needs no user action because the Keystore key isn't auth-bound), erase.
 /// Screens get the services through <see cref="Services"/> once open.
 /// </summary>
 public sealed class VaultHost(AppSettings settings, HttpClient http) : IVaultChangeHandler
@@ -64,29 +63,12 @@ public sealed class VaultHost(AppSettings settings, HttpClient http) : IVaultCha
         }
     }
 
-    public async Task<RecoveryCode> CreateAsync(string displayName)
+    public async Task CreateAsync(string displayName)
     {
         await _gate.WaitAsync();
         try
         {
-            var (vault, code) = await Boot.CreateAsync(displayName);
-            Attach(vault);
-            return code;
-        }
-        finally
-        {
-            _gate.Release();
-        }
-    }
-
-    public async Task RestoreAsync(Stream backup, RecoveryCode code)
-    {
-        await _gate.WaitAsync();
-        try
-        {
-            CloseCore();
-            Attach(await Boot.RestoreAsync(backup, code));
-            settings.RecoveryCodeConfirmed = true;
+            Attach(await Boot.CreateAsync(displayName));
         }
         finally
         {
