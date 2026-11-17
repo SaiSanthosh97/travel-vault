@@ -7,6 +7,8 @@ All your family's tickets, boarding passes, hotel bookings, visas and passports 
 - Share a PDF or screenshot from WhatsApp, Gmail or your files and the details are read on the phone: boarding-pass barcodes, passport MRZ, PDF text, OCR.
 - Built from reusable components, the same model as *Use It Before*.
 
+**Download:** [latest release](https://github.com/SaiSanthosh97/travel-vault/releases/latest) · Releasing updates: [docs/RELEASING.md](docs/RELEASING.md)
+
 Requirements and decisions: [Requirements.md](Requirements.md) · Design: [docs/](docs/README.md) · Change log: [docs/CHANGES.md](docs/CHANGES.md) · Technical write-ups per feature: [docs/technical/](docs/technical/README.md)
 
 ## Components
