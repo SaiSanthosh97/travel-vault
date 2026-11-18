@@ -51,7 +51,7 @@
   <data name="Welcome_Title" xml:space="preserve"><value>Welcome</value></data>
   <data name="Welcome_Pitch" xml:space="preserve"><value>All your family&apos;s tickets, boarding passes and bookings in one place — on your phone, offline, and private. No account. Free.</value></data>
   <data name="Welcome_YourName" xml:space="preserve"><value>Your name</value></data>
-  <data name="Welcome_NamePlaceholder" xml:space="preserve"><value>e.g. Priya</value></data>
+  <data name="Welcome_NamePlaceholder" xml:space="preserve"><value>e.g. Santhosh, Ria</value></data>
   <data name="Welcome_NameHelp" xml:space="preserve"><value>Family members see this name. It stays on your phone and your family&apos;s phones only.</value></data>
   <data name="Welcome_NameNeeded" xml:space="preserve"><value>Please enter your name.</value></data>
   <data name="Welcome_Start" xml:space="preserve"><value>Get started</value></data>
@@ -297,4 +297,16 @@
   <data name="Update_Failed" xml:space="preserve"><value>Couldn&apos;t check for updates. Try again on Wi-Fi.</value></data>
   <data name="Update_Damaged" xml:space="preserve"><value>The download was damaged and has been deleted. Try again.</value></data>
   <data name="Update_AllowInstall" xml:space="preserve"><value>Android needs your permission once to install updates for Travel Vault. Turn on “Allow from this source”, then try again.</value></data>
+  <data name="Field_Seat" xml:space="preserve"><value>Seat</value></data>
+  <data name="Field_Class" xml:space="preserve"><value>Class</value></data>
+  <data name="Field_Coach" xml:space="preserve"><value>Coach</value></data>
+  <data name="Field_Berth" xml:space="preserve"><value>Berth</value></data>
+  <data name="Ticket_CheckIn" xml:space="preserve"><value>Check-in</value></data>
+  <data name="Ticket_CheckOut" xml:space="preserve"><value>Check-out</value></data>
+  <data name="Ticket_Night" xml:space="preserve"><value>{0} night</value></data>
+  <data name="Ticket_Nights" xml:space="preserve"><value>{0} nights</value></data>
+  <data name="Ticket_Duration" xml:space="preserve"><value>{0}h {1:00}m</value></data>
+  <data name="Ticket_Passengers" xml:space="preserve"><value>Passengers</value></data>
+  <data name="Ticket_MoreDetails" xml:space="preserve"><value>More details ▾</value></data>
+  <data name="Ticket_LessDetails" xml:space="preserve"><value>Fewer details ▴</value></data>
 </root>

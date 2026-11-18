@@ -247,6 +247,13 @@ ntfy.sh keeps messages ~12h and files ~3h. A phone that is away longer sends a *
 | D54 | Change management | Changes stay possible. **Every change** to requirements, design or code behaviour is recorded in [docs/CHANGES.md](docs/CHANGES.md) (what, why, which documents were updated). |
 | D55 | Technical design docs | For **every implemented feature**, a technical design document goes in [docs/technical/](docs/technical/README.md), covering minor to major details: how it works, **why this approach**, alternatives rejected, trade-offs, edge cases, testing, and interview Q&A. |
 
+## Round 13 — Daily use feedback (2026-11-18)
+
+| # | Topic | Decision |
+|---|-------|----------|
+| D58 | Reading tickets (extends D34) | Tickets are read **by layout**: a value can be beside its label or under it. Supported layouts: IRCTC/RailOne (all three slip formats, passenger table, berth codes), IndiGo, Air India / Akasa (generic airline rules), MakeMyTrip / Goibibo / Cleartrip / ixigo (travel-site e-tickets), redBus, Booking.com / OYO. Still no AI and still on the phone. (C-022) |
+| D59 | Document screen | The document screen is a **ticket card**: route, times, PNR, seat and passengers first; other details folded. (C-023) |
+
 ## Round 12 — After the first build (2026-11-17)
 
 | # | Topic | Decision |

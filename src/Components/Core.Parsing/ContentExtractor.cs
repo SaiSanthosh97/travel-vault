@@ -8,7 +8,15 @@ namespace TravelVault.Core.Parsing;
 public interface ITextRecognizer
 {
     Task<string> ReadTextAsync(byte[] image, CancellationToken cancellationToken = default);
+
+    /// <summary>The text plus each word's box, so labels can be matched to the values under them. Recognisers that can't
+    /// give positions return the text only.</summary>
+    async Task<RecognizedText> ReadWordsAsync(byte[] image, CancellationToken cancellationToken = default) =>
+        new(await ReadTextAsync(image, cancellationToken), []);
 }
+
+/// <summary>OCR output: the text and, when available, each word with its box in image pixels.</summary>
+public sealed record RecognizedText(string Text, IReadOnlyList<LayoutWord> Words);
 
 /// <summary>Finds barcodes in an image (Android: Google ML Kit): PDF417/Aztec/QR boarding passes, ticket QR codes.</summary>
 public interface IBarcodeScanner
@@ -142,9 +150,9 @@ public sealed class ContentExtractor(ITextRecognizer ocr, IBarcodeScanner scanne
 
         if (MediaTypes.IsImage(mediaType))
         {
-            var text = await ocr.ReadTextAsync(data, cancellationToken);
+            var recognized = await ocr.ReadWordsAsync(data, cancellationToken);
             var codes = await scanner.ScanAsync(data, cancellationToken);
-            return new ExtractedContent(text, codes, fileName);
+            return WithLayout(recognized.Text, recognized.Words, codes, fileName);
         }
 
         if (mediaType != MediaTypes.Pdf)
@@ -152,7 +160,8 @@ public sealed class ContentExtractor(ITextRecognizer ocr, IBarcodeScanner scanne
             return ExtractedContent.Empty with { FileName = fileName };
         }
 
-        var pdfText = PdfText(data);
+        var pdfWords = PdfWords(data);
+        var pdfText = pdfWords.Count > 0 ? TextLayout.FromWords(pdfWords).Text : PdfText(data);
         IReadOnlyList<byte[]> pages;
         try
         {
@@ -165,17 +174,61 @@ public sealed class ContentExtractor(ITextRecognizer ocr, IBarcodeScanner scanne
 
         var barcodes = new List<Barcode>();
         var ocrText = new StringBuilder();
-        foreach (var page in pages)
+        var ocrWords = new List<LayoutWord>();
+        for (var i = 0; i < pages.Count; i++)
         {
-            barcodes.AddRange(await scanner.ScanAsync(page, cancellationToken));
+            barcodes.AddRange(await scanner.ScanAsync(pages[i], cancellationToken));
             if (pdfText.Length < MinUsefulTextLength)
             {
-                ocrText.AppendLine(await ocr.ReadTextAsync(page, cancellationToken));
+                var recognized = await ocr.ReadWordsAsync(pages[i], cancellationToken);
+                ocrText.AppendLine(recognized.Text);
+                ocrWords.AddRange(recognized.Words.Select(w => w with { Page = i }));
             }
         }
 
-        var finalText = pdfText.Length >= MinUsefulTextLength ? pdfText : (pdfText + "\n" + ocrText).Trim();
-        return new ExtractedContent(finalText, barcodes.DistinctBy(b => b.Value).ToList(), fileName);
+        var distinct = barcodes.DistinctBy(b => b.Value).ToList();
+        return pdfText.Length >= MinUsefulTextLength
+            ? WithLayout(pdfText, pdfWords, distinct, fileName)
+            : WithLayout((pdfText + "\n" + ocrText).Trim(), ocrWords, distinct, fileName);
+    }
+
+    /// <summary>With word positions, the text is rebuilt row by row (left to right) and the layout is kept for the form reader.</summary>
+    private static ExtractedContent WithLayout(string text, IReadOnlyList<LayoutWord> words, IReadOnlyList<Barcode> barcodes, string? fileName)
+    {
+        if (words.Count == 0)
+        {
+            return new ExtractedContent(text, barcodes, fileName);
+        }
+
+        var layout = TextLayout.FromWords(words);
+        return new ExtractedContent(layout.Text, barcodes, fileName) { Layout = layout };
+    }
+
+    /// <summary>Every word of the PDF text layer with its box (y measured from the top of the page). Empty for scanned PDFs.</summary>
+    public static IReadOnlyList<LayoutWord> PdfWords(byte[] data)
+    {
+        try
+        {
+            using var document = PdfDocument.Open(data);
+            var words = new List<LayoutWord>();
+            var index = 0;
+            foreach (var page in document.GetPages().Take(MaxPages * 2))
+            {
+                foreach (var word in page.GetWords())
+                {
+                    var box = word.BoundingBox;
+                    words.Add(new LayoutWord(word.Text, box.Left, page.Height - box.Top, box.Right, page.Height - box.Bottom, index));
+                }
+
+                index++;
+            }
+
+            return words;
+        }
+        catch (Exception)
+        {
+            return []; // encrypted, damaged or unusual: the caller falls back to OCR of the rendered pages
+        }
     }
 
     /// <summary>Text layer of a PDF in reading order, page by page. Empty for scanned or protected PDFs.</summary>

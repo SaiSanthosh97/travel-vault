@@ -16,13 +16,33 @@ namespace TravelVault.App.ViewModels;
 /// <summary>A label/value line; <see cref="Check"/> highlights values read with low confidence (FR-D6).</summary>
 public sealed record FieldRow(string Label, string Value, bool Check);
 
-public sealed record SegmentRow(string Route, string Departs, string Arrives, string Details, string Missing);
+/// <summary>
+/// One leg of the ticket card, laid out like a printed ticket: big codes (or names) on both ends, times under them,
+/// the travel time in the middle. A stay uses the two ends for check-in and check-out; an event has only the start.
+/// </summary>
+public sealed record TicketLeg(
+    string FromCode, string FromName, string DepartTime, string DepartDate,
+    string ToCode, string ToName, string ArriveTime, string ArriveDate,
+    string Middle, string ModeIcon, bool HasEnd, string Missing)
+{
+    public bool HasMissing => Missing.Length > 0;
+}
+
+/// <summary>A small labelled value on the ticket strip ("PNR 4521378965", "Berth 56").</summary>
+public sealed record TicketChip(string Label, string Value, bool Check);
+
+/// <summary>A traveler on this ticket and what the ticket says about them ("Confirmed · Coach S4 · Berth 56").</summary>
+public sealed record PassengerLine(string Name, string Status)
+{
+    public bool HasStatus => Status.Length > 0;
+}
 
 public sealed record FileRow(string Id, string Text, bool IsPrimary);
 
 /// <summary>
-/// One document: details with confidence highlights, legs, travelers, file versions, linked boarding passes and
-/// who's still missing one, and every action (view, barcode, save, share, edit, travelers, private, trip, merge, delete).
+/// One document, shown as a ticket card (provider and status, the route with big times, a strip with PNR/class/seat,
+/// the passengers with their seats) followed by trip, files and actions. Everything else that was read from the
+/// ticket is folded under "More details" so the important parts are visible without scrolling.
 /// </summary>
 public sealed partial class DocumentViewModel(VaultHost host, AppSettings settings, FileActions files, Dialogs dialogs)
     : ObservableObject, IQueryAttributable, ILoads
@@ -64,9 +84,34 @@ public sealed partial class DocumentViewModel(VaultHost host, AppSettings settin
     [ObservableProperty]
     public partial string Warning { get; set; } = "";
 
-    public ObservableCollection<FieldRow> Fields { get; } = [];
+    /// <summary>Top band of the card: the provider ("IRCTC", "IndiGo", the hotel) or the document type.</summary>
+    [ObservableProperty]
+    public partial string HeaderTitle { get; set; } = "";
 
-    public ObservableCollection<SegmentRow> Segments { get; } = [];
+    /// <summary>Service under the provider: "20824 · AII PURI SF EXP", "6E 2345".</summary>
+    [ObservableProperty]
+    public partial string HeaderSubtitle { get; set; } = "";
+
+    [ObservableProperty]
+    public partial string StatusText { get; set; } = "";
+
+    [ObservableProperty]
+    public partial Color StatusColor { get; set; } = Colors.Transparent;
+
+    [ObservableProperty]
+    public partial bool ShowMore { get; set; }
+
+    [ObservableProperty]
+    public partial string MoreText { get; set; } = AppResources.Ticket_MoreDetails;
+
+    public ObservableCollection<TicketLeg> Legs { get; } = [];
+
+    public ObservableCollection<TicketChip> Chips { get; } = [];
+
+    public ObservableCollection<PassengerLine> Passengers { get; } = [];
+
+    /// <summary>Everything else that was read (booking reference, quota, distance, transaction id, notes…).</summary>
+    public ObservableCollection<FieldRow> Fields { get; } = [];
 
     public ObservableCollection<FileRow> Files { get; } = [];
 
@@ -95,31 +140,7 @@ public sealed partial class DocumentViewModel(VaultHost host, AppSettings settin
         CanShowBarcode = doc.Type is DocumentType.BoardingPass or DocumentType.Event or DocumentType.Train or DocumentType.Bus or DocumentType.Flight;
         Services.Activity.SetSecure(IsPrivate || doc.Type is DocumentType.Passport or DocumentType.Visa, settings);
 
-        Fields.Clear();
-        Add(AppResources.Field_Pnr, doc.Pnr, TravelDocument.Fields.Pnr);
-        Add(AppResources.Field_BookingRef, doc.BookingReference, TravelDocument.Fields.BookingReference);
-        Add(AppResources.Field_Provider, doc.Provider, TravelDocument.Fields.Provider);
-        if (doc.Identity is { } id)
-        {
-            Add(AppResources.Field_DocumentNumber, id.MaskedNumber, TravelDocument.Fields.Identity);
-            Add(AppResources.Field_Country, id.VisaCountry ?? id.IssuingCountry, TravelDocument.Fields.Identity);
-            Add(AppResources.Field_ValidFrom, id.ValidFrom?.ToString("d MMM yyyy", CultureInfo.CurrentCulture), TravelDocument.Fields.Identity);
-            Add(AppResources.Field_Expires, id.ExpiresOn?.ToString("d MMM yyyy", CultureInfo.CurrentCulture), TravelDocument.Fields.Identity);
-        }
-
-        Add(AppResources.Field_Notes, doc.Notes, "notes");
-
-        Segments.Clear();
-        foreach (var segment in doc.Segments)
-        {
-            var missing = doc.Type == DocumentType.Flight ? BoardingPassLinker.MissingFor(doc, segment, all) : [];
-            Segments.Add(new SegmentRow(
-                Display.Route(segment),
-                Display.When(segment.Departs),
-                segment.Arrives is null ? "" : "→ " + Display.When(segment.Arrives),
-                string.Join(" · ", new[] { segment.ServiceNumber, segment.Seat is null ? null : string.Format(AppResources.Home_Seat, segment.Seat), segment.TravelClass }.Where(x => !string.IsNullOrWhiteSpace(x))),
-                missing.Count == 0 ? "" : string.Format(AppResources.Document_MissingPass, string.Join(", ", missing.Select(t => travelers.TryGetValue(t, out var tr) ? tr.DisplayName : "?")))));
-        }
+        BuildCard(doc, all, travelers);
 
         Files.Clear();
         var present = await s.FileKeys.PresentAsync(doc.FamilyId);
@@ -143,6 +164,125 @@ public sealed partial class DocumentViewModel(VaultHost host, AppSettings settin
         HasDuplicate = _duplicate is not null;
         DuplicateText = _duplicate is null ? "" : string.Format(AppResources.Document_Duplicate, _duplicate.Existing.Title);
         Warning = doc.FieldConfidence.Values.Any(c => c == Confidence.Low) ? AppResources.Document_CheckWarning : "";
+    }
+
+    private void BuildCard(TravelDocument doc, IReadOnlyList<TravelDocument> all, IReadOnlyDictionary<string, Core.Travelers.Traveler> travelers)
+    {
+        var first = doc.Segments.FirstOrDefault();
+        HeaderTitle = doc.Provider ?? Display.TypeName(doc.Type);
+        HeaderSubtitle = doc.Segments.Count == 1 && first is not null
+            ? string.Join(" · ", new[] { first.ServiceNumber, first.ServiceName }.Where(x => !string.IsNullOrWhiteSpace(x)))
+            : Display.TypeName(doc.Type);
+        if (HeaderSubtitle.Length == 0 || HeaderSubtitle == HeaderTitle)
+        {
+            HeaderSubtitle = Display.TypeName(doc.Type);
+        }
+
+        var details = doc.Details.ToList();
+        var status = Take("Status");
+        StatusText = status?.ToUpper(CultureInfo.CurrentCulture) ?? "";
+        StatusColor = status switch
+        {
+            null => Colors.Transparent,
+            _ when status.StartsWith("Confirmed", StringComparison.OrdinalIgnoreCase) => Display.Ok,
+            _ when status.StartsWith("Cancel", StringComparison.OrdinalIgnoreCase) => Display.Danger,
+            _ => Display.Warning,
+        };
+
+        Legs.Clear();
+        foreach (var segment in doc.Segments)
+        {
+            var missing = doc.Type == DocumentType.Flight ? BoardingPassLinker.MissingFor(doc, segment, all) : [];
+            var missingText = missing.Count == 0 ? "" : string.Format(AppResources.Document_MissingPass, string.Join(", ", missing.Select(t => travelers.TryGetValue(t, out var tr) ? tr.DisplayName : "?")));
+            Legs.Add(Leg(doc, segment, doc.Segments.Count > 1, missingText));
+        }
+
+        // The strip: what you are asked for at the gate or by the TTE.
+        Chips.Clear();
+        Chip(AppResources.Field_Pnr, doc.Pnr, TravelDocument.Fields.Pnr);
+        if (doc.Pnr is null)
+        {
+            Chip(AppResources.Field_BookingRef, doc.BookingReference, TravelDocument.Fields.BookingReference);
+        }
+
+        if (first is not null && doc.Segments.Count == 1)
+        {
+            if (doc.Type == DocumentType.Train && first.Seat?.Split('/') is [var coach, var berth])
+            {
+                Chip(AppResources.Field_Coach, coach, TravelDocument.Fields.Segments);
+                Chip(AppResources.Field_Berth, berth, TravelDocument.Fields.Segments);
+            }
+            else
+            {
+                Chip(AppResources.Field_Seat, first.Seat, TravelDocument.Fields.Segments);
+            }
+
+            Chip(AppResources.Field_Class, ShortClass(first.TravelClass), TravelDocument.Fields.Segments);
+        }
+
+        foreach (var label in new[] { "Gate", "Terminal", "Boarding time", "PIN", "Nights" })
+        {
+            Chip(label, Take(label), TravelDocument.Fields.Segments);
+        }
+
+        if (doc.Identity is { } id)
+        {
+            Chip(AppResources.Field_DocumentNumber, id.MaskedNumber, TravelDocument.Fields.Identity);
+            Chip(AppResources.Field_Country, id.VisaCountry ?? id.IssuingCountry, TravelDocument.Fields.Identity);
+            Chip(AppResources.Field_ValidFrom, id.ValidFrom?.ToString("d MMM yyyy", CultureInfo.CurrentCulture), TravelDocument.Fields.Identity);
+            Chip(AppResources.Field_Expires, id.ExpiresOn?.ToString("d MMM yyyy", CultureInfo.CurrentCulture), TravelDocument.Fields.Identity);
+        }
+
+        // Passengers with what the ticket says about each one (matched by the name as printed).
+        Passengers.Clear();
+        foreach (var travelerId in doc.AllTravelerIds())
+        {
+            var name = travelers.TryGetValue(travelerId, out var t) ? t.DisplayName : "?";
+            var printed = doc.Passengers.FirstOrDefault(p => p.TravelerId == travelerId)?.RawName;
+            var line = printed is null ? null : details.FirstOrDefault(d => string.Equals(d.Label, printed, StringComparison.OrdinalIgnoreCase));
+            if (line is not null)
+            {
+                details.Remove(line);
+            }
+
+            Passengers.Add(new PassengerLine(name, line?.Value ?? ""));
+        }
+
+        // Everything else, folded away.
+        Fields.Clear();
+        Add(AppResources.Field_BookingRef, doc.Pnr is null ? null : doc.BookingReference, TravelDocument.Fields.BookingReference);
+        if (doc.Segments.Count == 1 && first?.TravelClass is { } cls && ShortClass(cls) != cls)
+        {
+            Add(AppResources.Field_Class, cls, TravelDocument.Fields.Segments);
+        }
+
+        foreach (var d in details)
+        {
+            Add(d.Label, d.Value, "details");
+        }
+
+        Add(AppResources.Field_Notes, doc.Notes, "notes");
+        ShowMore = false;
+        MoreText = AppResources.Ticket_MoreDetails;
+
+        string? Take(string label)
+        {
+            var found = details.FirstOrDefault(d => d.Label == label);
+            if (found is not null)
+            {
+                details.Remove(found);
+            }
+
+            return found?.Value;
+        }
+
+        void Chip(string label, string? value, string field)
+        {
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                Chips.Add(new TicketChip(label.ToUpper(CultureInfo.CurrentCulture), value, doc.ConfidenceOf(field) == Confidence.Low));
+            }
+        }
 
         void Add(string label, string? value, string field)
         {
@@ -151,6 +291,74 @@ public sealed partial class DocumentViewModel(VaultHost host, AppSettings settin
                 Fields.Add(new FieldRow(label, value, doc.ConfidenceOf(field) == Confidence.Low));
             }
         }
+    }
+
+    /// <summary>"SLEEPER CLASS (SL)" → "SL", "AC 3 TIER (3A)" → "3A": the code fits the strip; the full name is under More details.</summary>
+    private static string? ShortClass(string? travelClass)
+    {
+        if (travelClass is null)
+        {
+            return null;
+        }
+
+        var open = travelClass.LastIndexOf('(');
+        var close = travelClass.LastIndexOf(')');
+        return open >= 0 && close > open + 1 && close - open <= 6 ? travelClass[(open + 1)..close] : travelClass;
+    }
+
+    private static TicketLeg Leg(TravelDocument doc, Segment s, bool several, string missing)
+    {
+        var icon = Display.Icon(doc.Type == DocumentType.BoardingPass ? DocumentType.Flight : doc.Type);
+        switch (s.Mode)
+        {
+            case TravelMode.Stay:
+                var nights = s.Departs is { } i && s.Arrives is { } o ? (DateOnly.FromDateTime(o.Local).DayNumber - DateOnly.FromDateTime(i.Local).DayNumber) : 0;
+                return new TicketLeg(
+                    AppResources.Ticket_CheckIn, s.From.City ?? "", Time(s.Departs), Day(s.Departs),
+                    AppResources.Ticket_CheckOut, "", Time(s.Arrives), Day(s.Arrives),
+                    nights <= 0 ? "" : string.Format(nights == 1 ? AppResources.Ticket_Night : AppResources.Ticket_Nights, nights), icon, s.Arrives is not null, missing);
+            case TravelMode.Event:
+                return new TicketLeg(Name(s.From), s.From.City ?? "", Time(s.Departs), Day(s.Departs), "", "", "", "", "", icon, false, missing);
+            default:
+                var middle = Duration(s) ?? (several ? s.ServiceNumber ?? "" : "");
+                return new TicketLeg(
+                    Code(s.From), Under(s.From), Time(s.Departs), Day(s.Departs),
+                    s.To is null ? "" : Code(s.To), s.To is null ? "" : Under(s.To), Time(s.Arrives), Day(s.Arrives),
+                    several && s.ServiceNumber is { } n && middle != n ? $"{n} · {middle}" : middle, icon, s.To is not null, missing);
+        }
+
+        static string Code(Place p) => p.Code ?? Name(p);
+
+        // Under the code: the city ("Ajmer" under AII); when there is no code the name is already big.
+        static string Under(Place p) => p.Code is null ? "" : p.City ?? Title(p.Name);
+
+        static string Name(Place p) => p.City is { Length: > 0 } city && p.Code is null && p.Name.Length > 24 ? city : p.Name;
+
+        static string Title(string s) => s.Any(char.IsLower) ? s : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(s.ToLowerInvariant());
+
+        static string Time(LocalDateTimeZ? t) => t is { HasTime: true } v ? v.Local.ToString("HH:mm", CultureInfo.CurrentCulture) : "";
+
+        static string Day(LocalDateTimeZ? t) => t is { } v ? v.Local.ToString("ddd d MMM yyyy", CultureInfo.CurrentCulture) : "";
+
+        static string? Duration(Segment s)
+        {
+            if (s.Departs is not { HasTime: true } d || s.Arrives is not { HasTime: true } a)
+            {
+                return null;
+            }
+
+            // Both ends in their own time zones when known (a flight Bengaluru → Dubai), otherwise as printed.
+            var span = d.TimeZoneId is not null && a.TimeZoneId is not null ? a.ToUtc() - d.ToUtc() : a.Local - d.Local;
+            return span <= TimeSpan.Zero || span > TimeSpan.FromDays(4) ? null
+                : string.Format(CultureInfo.CurrentCulture, AppResources.Ticket_Duration, (int)span.TotalHours, span.Minutes);
+        }
+    }
+
+    [RelayCommand]
+    private void ToggleMore()
+    {
+        ShowMore = !ShowMore;
+        MoreText = ShowMore ? AppResources.Ticket_LessDetails : AppResources.Ticket_MoreDetails;
     }
 
     [RelayCommand]

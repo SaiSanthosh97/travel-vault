@@ -18,8 +18,8 @@
 
 		<!-- ApplicationDisplayVersion must match the GitHub release tag (v0.1.0) for update checks.
 		     ApplicationVersion must go up by one with every release. -->
-		<ApplicationDisplayVersion>0.1.1</ApplicationDisplayVersion>
-		<ApplicationVersion>2</ApplicationVersion>
+		<ApplicationDisplayVersion>0.1.2</ApplicationDisplayVersion>
+		<ApplicationVersion>3</ApplicationVersion>
 
 		<SupportedOSPlatformVersion>26.0</SupportedOSPlatformVersion>
 		<!-- Phones are ARM64; -p:EmulatorBuild=true builds the Release app for the x86-64 emulator. -->

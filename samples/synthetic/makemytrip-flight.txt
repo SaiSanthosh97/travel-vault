@@ -1,0 +1,10 @@
+MakeMyTrip
+ETicket   Booking ID: NF7R2K81234567   Booking Date: Fri, 19 Jun 2026
+
+IndiGo   6E 198
+Departure   Mumbai (BOM)   Terminal 1    Sat, 12 Dec 2026 22:10 hrs
+Arrival     Delhi (DEL)    Terminal 1D   Sun, 13 Dec 2026 00:20 hrs
+
+Passenger Name        Type     Airline PNR   E-Ticket Number
+Mr Karan Malhotra     Adult    T4KX9B        3122456789012
+Synthetic sample for testing.

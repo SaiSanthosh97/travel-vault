@@ -1,0 +1,14 @@
+redBus   Ticket
+Bengaluru → Hyderabad
+Ticket Number          PNR No
+TT5B8293KQ             8812AB34
+Travels                          Bus Type
+Orange Tours and Travels         A/C Sleeper (2+1)
+Journey Date: Fri, 15 Jan 2027
+Reporting Time: 20:45   Departure Time: 21:15
+Boarding Point
+Location: Kalasipalyam   Landmark: Near Bus Stand
+Dropping Point: Miyapur, Hyderabad
+Seat Numbers: U4, U5
+Passenger Name: Ms Neha Kulkarni
+Synthetic sample for testing.

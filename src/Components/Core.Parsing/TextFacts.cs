@@ -30,8 +30,9 @@ public sealed partial class TextFacts
         "CHECKIN", "CHECKOUT", "INCLUDED", "PAYMENT", "INVOICE", "ISSUED", "ADULT", "CHILD", "GUEST", "ROOMS",
     };
 
-    private TextFacts(string text, DateOnly reference)
+    private TextFacts(string text, DateOnly reference, IReadOnlyList<FormField>? fields)
     {
+        Fields = fields ?? [];
         Text = text.Replace("\r\n", "\n", StringComparison.Ordinal).Replace('\r', '\n');
         Lines = Text.Split('\n').Select(l => l.Trim()).ToList();
         Reference = reference;
@@ -48,7 +49,19 @@ public sealed partial class TextFacts
     /// <summary>All dates in reading order, each paired with a time when one is printed next to it.</summary>
     public IReadOnlyList<DateTimeMention> DateTimes { get; }
 
-    public static TextFacts Analyze(string text, DateOnly reference) => new(text ?? "", reference);
+    /// <summary>Label/value pairs read from the page layout (see <see cref="FormReader"/>). Checked before the plain text.</summary>
+    public IReadOnlyList<FormField> Fields { get; }
+
+    public static TextFacts Analyze(string text, DateOnly reference, IReadOnlyList<FormField>? fields = null) => new(text ?? "", reference, fields);
+
+    /// <summary>The value of the first form field whose label matches the pattern (a regex fragment), or null.</summary>
+    public string? FieldValue(string label) => FieldsMatching(label).Select(f => f.Value).FirstOrDefault();
+
+    private IEnumerable<FormField> FieldsMatching(string label)
+    {
+        var regex = new Regex(@"(?<![A-Za-z])(?:" + label + @")(?![A-Za-z])", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        return Fields.Where(f => f.Value.Length > 0 && regex.IsMatch(f.Label));
+    }
 
     public bool Has(string pattern) => Regex.IsMatch(Text, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
@@ -62,6 +75,11 @@ public sealed partial class TextFacts
     {
         foreach (var label in labels)
         {
+            if (FieldValue(label) is { } field)
+            {
+                return field;
+            }
+
             var regex = new Regex(@"(?<![A-Za-z])(?:" + label + @")(?![A-Za-z])\s*(?:no\.?|number|#)?\s*[:\-–#.]?\s*(?<v>.*)$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
             for (var i = 0; i < Lines.Count; i++)
             {
@@ -115,6 +133,11 @@ public sealed partial class TextFacts
         foreach (var raw in value.Split([' ', ',', ';', '|', '/', '\t', '(', ')'], StringSplitOptions.RemoveEmptyEntries))
         {
             var token = raw.Trim('.', ':', '-', '#').ToUpperInvariant();
+            if (DottedNumber().IsMatch(token))
+            {
+                token = token.Replace(".", "", StringComparison.Ordinal); // Booking.com: "4128.553.911"
+            }
+
             if (token.Length is < 5 or > 14 || !token.All(char.IsAsciiLetterOrDigit) || NotCodes.Contains(token))
             {
                 continue;
@@ -153,6 +176,17 @@ public sealed partial class TextFacts
     public DateTimeMention? DateTimeNear(string labelPattern)
     {
         DateTimeMention? withoutTime = null;
+        foreach (var field in FieldsMatching(labelPattern))
+        {
+            var mention = Analyze(field.Value, Reference).DateTimes.FirstOrDefault();
+            if (mention?.Time is not null)
+            {
+                return mention with { Line = -1 };
+            }
+
+            withoutTime ??= mention is null ? null : mention with { Line = -1 };
+        }
+
         for (var line = LineOf(labelPattern); line >= 0; line = LineOf(labelPattern, line + 1))
         {
             var mention = DateTimes.FirstOrDefault(d => d.Line == line) ?? DateTimes.FirstOrDefault(d => d.Line > line && d.Line <= line + 3);
@@ -165,6 +199,21 @@ public sealed partial class TextFacts
         }
 
         return withoutTime;
+    }
+
+    /// <summary>The first time in a value: "22:00", "9:10 PM", "2210 hrs".</summary>
+    public static TimeOnly? FirstTime(string value)
+    {
+        foreach (var regex in new[] { Time24(), TimeAmPm(), TimeHrs() })
+        {
+            var m = regex.Match(value);
+            if (m.Success && ToTime(m) is { } t)
+            {
+                return t;
+            }
+        }
+
+        return null;
     }
 
     public string? NextNonEmpty(int line)
@@ -201,6 +250,14 @@ public sealed partial class TextFacts
     public IReadOnlyList<string> PersonNames()
     {
         var found = new List<string>();
+        foreach (var field in FieldsMatching(@"^(?:passenger|traveller|traveler|guest|lead\s*guest)?\s*names?$|^(?:passenger|traveller|traveler|guest)s?$"))
+        {
+            if (CleanName(field.Value) is { } name)
+            {
+                found.Add(name);
+            }
+        }
+
         var labelRegex = LabelForNames();
         for (var i = 0; i < Lines.Count; i++)
         {
@@ -499,6 +556,9 @@ public sealed partial class TextFacts
 
     [GeneratedRegex(@"^\s*(?:\d+[.)]\s*)?(?:mr|mrs|ms|miss|mstr|master|dr|shri|smt)\.?\s+[a-z]", RegexOptions.IgnoreCase)]
     private static partial Regex TitledName();
+
+    [GeneratedRegex(@"^\d+(?:\.\d+)+$")]
+    private static partial Regex DottedNumber();
 
     [GeneratedRegex(@"^\s*(?:\d+[.)]\s*|(?:adult|child|infant)\s*\d*\s*[:\-]?\s*)", RegexOptions.IgnoreCase)]
     private static partial Regex LeadingEnumeration();

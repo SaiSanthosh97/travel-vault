@@ -38,7 +38,14 @@ internal static class Images
 /// <summary>Reads printed Latin-script text from a photo or rendered PDF page with Google ML Kit, on the phone.</summary>
 public sealed class MlKitTextRecognizer : Core.Parsing.ITextRecognizer
 {
-    public Task<string> ReadTextAsync(byte[] image, CancellationToken cancellationToken = default) =>
+    public async Task<string> ReadTextAsync(byte[] image, CancellationToken cancellationToken = default) =>
+        (await ReadWordsAsync(image, cancellationToken)).Text;
+
+    /// <summary>
+    /// Text plus every word's box in image pixels. The boxes let the form reader match a label to the value printed
+    /// under it, as rail and airline apps lay out their ticket screens ("PNR" in small print, the number below).
+    /// </summary>
+    public Task<RecognizedText> ReadWordsAsync(byte[] image, CancellationToken cancellationToken = default) =>
         Images.WithInputImageAsync(image, async input =>
         {
             using var recognizer = TextRecognition.GetClient(TextRecognizerOptions.DefaultOptions);
@@ -47,11 +54,24 @@ public sealed class MlKitTextRecognizer : Core.Parsing.ITextRecognizer
                 var result = (await recognizer.Process(input).AsTask().WaitAsync(cancellationToken))?.JavaCast<Text>();
                 if (result is null)
                 {
-                    return "";
+                    return new RecognizedText("", []);
                 }
 
-                // Line by line, block by block: keeps "Label: value" pairs together for the parsers.
-                return string.Join('\n', result.TextBlocks.SelectMany(b => b.Lines).Select(l => l.Text));
+                var lines = result.TextBlocks.SelectMany(b => b.Lines).ToList();
+                var words = new List<LayoutWord>();
+                foreach (var line in lines)
+                {
+                    foreach (var element in line.Elements)
+                    {
+                        if (element.BoundingBox is { } box && !string.IsNullOrWhiteSpace(element.Text))
+                        {
+                            words.Add(new LayoutWord(element.Text, box.Left, box.Top, box.Right, box.Bottom));
+                        }
+                    }
+                }
+
+                // Line by line, block by block: keeps "Label: value" pairs together for the text rules.
+                return new RecognizedText(string.Join('\n', lines.Select(l => l.Text)), words);
             }
             finally
             {

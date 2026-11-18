@@ -1,0 +1,5 @@
+IndiGo
+Boarding Pass (Web Check-in)
+Name Mr Arjun Mehta From Dibrugarh To Kolkata Flight No. 6E  206 Date 08Apr27 Boarding Time 13:55 Departure Time 14:40 Gate 3 Seat No. 21F
+PNR: KQ7Z2M  Seq: 031
+Synthetic sample for testing.

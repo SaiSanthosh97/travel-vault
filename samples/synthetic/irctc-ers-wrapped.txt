@@ -1,0 +1,8 @@
+Electronic Reservation Slip (Agent)
+PNR No. : 8812345670           Train No. & Name: 16528/YESVANTPUR EXP     Quota : GENERAL
+From: KANNUR(CAN)              Date of Journey: 14-Aug-2027               Class: SLEEPER (SL)
+Boarding At: KANNUR(CAN)       Scheduled Departure: 14-Aug-               Resv. Upto: YESVANTPUR
+                                                    2027 18:05 *                      JN(YPR)
+Passenger Details
+1  LATA NAIR  61  F  RLWL/14  RLWL/9
+Synthetic sample for testing: agent slip whose values wrap onto the next line, made-up values.

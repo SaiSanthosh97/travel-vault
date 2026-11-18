@@ -15,9 +15,14 @@ public enum BarcodeFormat
 
 public sealed record Barcode(BarcodeFormat Format, string Value);
 
-/// <summary>What was read from a file: its text (PDF text layer or OCR) and any barcodes.</summary>
+/// <summary>
+/// What was read from a file: its text (PDF text layer or OCR), any barcodes, and where each word sits on the page
+/// (<see cref="Layout"/>; null for plain text, which is then read as a character grid).
+/// </summary>
 public sealed record ExtractedContent(string Text, IReadOnlyList<Barcode> Barcodes, string? FileName = null)
 {
+    public TextLayout? Layout { get; init; }
+
     public static readonly ExtractedContent Empty = new("", []);
 }
 
@@ -41,6 +46,17 @@ public sealed class ParsedDocument
     public List<string> PassengerNames { get; } = [];
 
     public IdentityInfo? Identity { get; set; }
+
+    /// <summary>Extra facts worth showing on the ticket (quota, booking status, terminal, gate…), in print order.</summary>
+    public List<DocumentDetail> Details { get; } = [];
+
+    public void AddDetail(string label, string? value)
+    {
+        if (!string.IsNullOrWhiteSpace(value) && !Details.Any(d => d.Label == label))
+        {
+            Details.Add(new DocumentDetail(label, value.Trim()));
+        }
+    }
 
     /// <summary>Raw boarding-pass barcode data, when found (used to link to a ticket).</summary>
     public BoardingPassData? BoardingPass { get; set; }

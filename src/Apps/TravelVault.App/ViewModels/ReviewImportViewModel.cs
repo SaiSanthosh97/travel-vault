@@ -90,7 +90,7 @@ public sealed partial class ReviewImportViewModel(VaultHost host, ImportCoordina
         Fields.Clear();
         foreach (var segment in doc.Segments)
         {
-            Fields.Add(new FieldRow(Display.Route(segment), Display.When(segment.Departs) + (segment.ServiceNumber is null ? "" : " · " + segment.ServiceNumber),
+            Fields.Add(new FieldRow(Display.Route(segment), Display.When(segment.Departs) + (segment.ServiceNumber is null ? "" : " · " + segment.ServiceNumber) + (segment.Seat is null ? "" : " · " + string.Format(AppResources.Home_Seat, segment.Seat)),
                 doc.ConfidenceOf(TravelDocument.Fields.Segments) == Confidence.Low));
         }
 
@@ -100,6 +100,11 @@ public sealed partial class ReviewImportViewModel(VaultHost host, ImportCoordina
         {
             Add(AppResources.Field_DocumentNumber, id.MaskedNumber, TravelDocument.Fields.Identity);
             Add(AppResources.Field_Expires, id.ExpiresOn?.ToString("d MMM yyyy", CultureInfo.CurrentCulture), TravelDocument.Fields.Identity);
+        }
+
+        foreach (var detail in doc.Details)
+        {
+            Add(detail.Label, detail.Value, "details"); // quota, booking status, terminal…: so a wrong read is visible before saving
         }
 
         var travelers = await host.Services.Travelers.ListAsync(doc.FamilyId);

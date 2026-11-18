@@ -143,7 +143,7 @@ public static class KnownProviders
         ("IHG", DocumentType.Hotel), ("Accor", DocumentType.Hotel), ("Taj", DocumentType.Hotel), ("OYO", DocumentType.Hotel), ("Treebo", DocumentType.Hotel),
         ("MakeMyTrip", DocumentType.Other), ("Goibibo", DocumentType.Other), ("Cleartrip", DocumentType.Other), ("Yatra", DocumentType.Other),
         ("EaseMyTrip", DocumentType.Other), ("ixigo", DocumentType.Other), ("Skyscanner", DocumentType.Other), ("Trip.com", DocumentType.Other), ("Kiwi.com", DocumentType.Other),
-        ("IRCTC", DocumentType.Train), ("Amtrak", DocumentType.Train), ("Eurostar", DocumentType.Train), ("Trainline", DocumentType.Train),
+        ("RailOne", DocumentType.Train), ("IRCTC", DocumentType.Train), ("Indian Railways", DocumentType.Train), ("Amtrak", DocumentType.Train), ("Eurostar", DocumentType.Train), ("Trainline", DocumentType.Train),
         ("Deutsche Bahn", DocumentType.Train), ("SNCF", DocumentType.Train), ("Renfe", DocumentType.Train), ("Trenitalia", DocumentType.Train), ("National Rail", DocumentType.Train),
         ("FlixBus", DocumentType.Bus), ("redBus", DocumentType.Bus), ("AbhiBus", DocumentType.Bus), ("Greyhound", DocumentType.Bus), ("Megabus", DocumentType.Bus),
         ("National Express", DocumentType.Bus), ("KSRTC", DocumentType.Bus), ("MSRTC", DocumentType.Bus),

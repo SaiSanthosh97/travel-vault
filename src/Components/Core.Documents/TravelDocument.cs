@@ -26,6 +26,9 @@ public sealed class Segment
     /// <summary>Flight / train / bus number, e.g. "6E 2345", "12627".</summary>
     public string? ServiceNumber { get; set; }
 
+    /// <summary>Name of the service when printed, e.g. the train name "Karnataka Express".</summary>
+    public string? ServiceName { get; set; }
+
     public string? Seat { get; set; }
 
     public string? TravelClass { get; set; }
@@ -37,6 +40,9 @@ public sealed class Segment
 
     public DateTimeOffset? ArrivesUtc => Arrives?.ToUtc();
 }
+
+/// <summary>An extra fact printed on the ticket ("Quota" → "Tatkal", "Terminal" → "1B"). Shown on the ticket card.</summary>
+public sealed record DocumentDetail(string Label, string Value);
 
 /// <summary>A passenger as printed on the ticket, matched to a traveler profile.</summary>
 public sealed record DocumentPassenger(string TravelerId, string? RawName, Confidence Match);
@@ -105,6 +111,9 @@ public sealed class TravelDocument : IVersioned
     public string? TripId { get; set; }
 
     public string? Notes { get; set; }
+
+    /// <summary>Extra printed facts read at import (quota, booking status, terminal…). See <see cref="DocumentDetail"/>.</summary>
+    public List<DocumentDetail> Details { get; set; } = [];
 
     /// <summary>Set when this document was merged into another (it is then deleted).</summary>
     public string? MergedInto { get; set; }

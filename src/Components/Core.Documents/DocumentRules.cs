@@ -101,6 +101,10 @@ public static class DocumentMerger
             target.Passengers = target.Passengers.Concat(source.Passengers).DistinctBy(p => p.TravelerId).ToList();
         }
 
+        // Printed extras: the newer ticket wins per label (a waitlisted ticket that got confirmed); the rest are kept.
+        var newer = sourceIsNewer ? source.Details : target.Details;
+        var older = sourceIsNewer ? target.Details : source.Details;
+        target.Details = newer.Concat(older.Where(o => newer.All(n => n.Label != o.Label))).ToList();
         target.Notes = string.Join("\n", new[] { target.Notes, source.Notes }.Where(n => !string.IsNullOrWhiteSpace(n)).Distinct());
         target.TripId ??= source.TripId;
         DocumentTitles.Refresh(target);

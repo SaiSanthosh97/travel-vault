@@ -210,6 +210,7 @@ public sealed class ImportService(
         doc.BookingReference = BookingCodes.Normalize(parsed.BookingReference) ?? parsed.BookingReference;
         doc.Identity = parsed.Identity;
         doc.Segments = [.. parsed.Segments];
+        doc.Details = [.. parsed.Details];
         foreach (var (field, confidence) in parsed.Confidence)
         {
             doc.FieldConfidence[field] = confidence;

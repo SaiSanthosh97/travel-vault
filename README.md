@@ -16,11 +16,11 @@ Requirements and decisions: [Requirements.md](Requirements.md) · Design: [docs/
 | Component | What it does |
 |---|---|
 | [`Core.Common`](src/Components/Core.Common) | Clock, ids (UUIDv7), hybrid logical clock, shared JSON settings |
-| [`Core.Security`](src/Components/Core.Security) | AES-256-GCM, HKDF, ECDSA/ECDH P-256, recipient boxes, key ring, file vault, recovery code, safety code |
+| [`Core.Security`](src/Components/Core.Security) | AES-256-GCM, HKDF, ECDSA/ECDH P-256, recipient boxes, key ring, file vault, safety code |
 | [`Core.Families`](src/Components/Core.Families) | Families, members, roles, invites (QR / text) |
 | [`Core.Travelers`](src/Components/Core.Travelers) | Traveler profiles, name normalisation, passenger matching |
 | [`Core.Documents`](src/Components/Core.Documents) | Travel documents, legs, file versions, merge, conflict rules |
-| [`Core.Parsing`](src/Components/Core.Parsing) | Reading tickets without AI: BCBP barcodes, MRZ, PDF text, dates/names, per-type parsers, airport data |
+| [`Core.Parsing`](src/Components/Core.Parsing) | Reading tickets without AI: BCBP barcodes, MRZ, layout-aware form reading (IRCTC/RailOne, IndiGo, MakeMyTrip, redBus, Booking.com), dates/names, per-type parsers, airport data |
 | [`Core.Duplicates`](src/Components/Core.Duplicates) | Strong / weak duplicate detection |
 | [`Core.Trips`](src/Components/Core.Trips) | Trips, suggestions, status, boarding-pass linking |
 | [`Core.Search`](src/Components/Core.Search) | Search index entries, safe queries |

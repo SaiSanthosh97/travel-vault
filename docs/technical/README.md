@@ -16,6 +16,7 @@ One document per implemented feature (D55). Each explains **what** was built, **
 | [TD-10](TD-10-Serverless-Sync.md) | Serverless sync: wire format, signed changes, cycle, conflicts, 12-hour window, files, joins, removal & key rotation | `Core.Sync`, `Core.Relay` | Implemented |
 | [TD-11](TD-11-Backup-and-First-Launch.md) | First launch, unlock, erase everything (backup & restore removed by C-020) | `Storage.Sqlite`, `Core.Vault` | Partly superseded |
 | [TD-12](TD-12-Android-App.md) | The Android app: screens, composition, share target, lock, reminders, background sync, device components | `TravelVault.App`, `Device.*` | Implemented |
+| [TD-13](TD-13-Form-Reading-and-Ticket-Card.md) | Reading tickets as forms by word position (IRCTC/RailOne, IndiGo, MakeMyTrip, redBus, Booking.com) and the ticket-card screen | `Core.Parsing`, `Device.Vision`, app Document page | Implemented |
 
 ## How to use these documents for an interview
 1. Start with the **one-paragraph summary** of each document. That is your "elevator pitch" for the feature.

@@ -1,0 +1,10 @@
+IndiGo   Flight Itinerary
+Booking Reference:
+ZX4P9Q
+Status:  Confirmed
+
+Date              From         To          Flight     Departs     Arrives
+Tue 16 Nov 27     Bengaluru    Delhi       6E 182     9:10 PM     11:55 PM
+
+Passenger Name: Mrs Kavya Iyer
+Synthetic sample for testing.

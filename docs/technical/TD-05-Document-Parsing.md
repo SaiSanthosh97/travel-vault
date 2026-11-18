@@ -9,6 +9,8 @@
 
 Every field carries a confidence. 13 synthetic tickets (flight, connecting flight, US-style, boarding pass, two trains, bus, hotel, two events, visa, passport) parse correctly in tests.
 
+> **Update (C-022):** tickets are now also read **as forms, by word position**: values beside or under their labels, IRCTC/RailOne, IndiGo, MakeMyTrip, redBus and Booking.com layouts. See [TD-13](TD-13-Form-Reading-and-Ticket-Card.md). The text rules below still apply and check the form fields first.
+
 ## Where the code is
 | File | Purpose |
 |---|---|

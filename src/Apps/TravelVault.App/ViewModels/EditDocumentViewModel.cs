@@ -80,6 +80,7 @@ public sealed partial class SegmentEdit : ObservableObject
             Arrives = HasArrival ? new LocalDateTimeZ(ArriveDate.Date + ArriveTime, (to ?? from).TimeZoneId) : null,
             CarrierCode = Original.CarrierCode,
             ServiceNumber = Blank(ServiceNumber),
+            ServiceName = Blank(ServiceNumber) == Original.ServiceNumber ? Original.ServiceName : null,
             Seat = Blank(Seat),
             TravelClass = Original.TravelClass,
             TravelerIds = Original.TravelerIds,

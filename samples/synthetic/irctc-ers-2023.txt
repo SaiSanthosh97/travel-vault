@@ -1,0 +1,13 @@
+IRCTC   Electronic Reservation Slip (ERS)   Normal User
+Booked From                    Boarding At                    To
+AJMER JN (AII)                 AJMER JN (AII)                 PURI (PURI)
+Start Date* 31-Aug-2027        Departure* 19:00 31-Aug-2027   Arrival* 14:25 02-Sep-2027
+PNR:                           Train No./Name:                Class:
+4521378965                     20824/AII PURI SF EXP          SLEEPER CLASS (SL)
+Quota:                         Distance:                      Ticket Printing Time:
+GENERAL (GN)                   2476 KM                        24-Aug-2027 18:31:21 HRS
+Passenger Details:
+#    Name              Age    Gender    Food Choice    Concession Code    Booking Status    Current Status
+1.   ANITA VERMA       34     F         NA             NOCONC             CNF/S4/56/SU      CNF/S4/56/SU
+2.   ROHIT VERMA       36     M         NA             NOCONC             CNF/S4/53/UB      CNF/S4/53/UB
+Synthetic sample for testing: layout of the 2023+ IRCTC slip, made-up values.

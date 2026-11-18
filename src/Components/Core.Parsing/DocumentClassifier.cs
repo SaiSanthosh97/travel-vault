@@ -30,6 +30,9 @@ public static class DocumentClassifier
         (DocumentType.Train, @"\brailways?\b|\brail\b", 3),
         (DocumentType.Train, @"\bstation\b", 1),
         (DocumentType.Train, @"\b(?:sleeper|3a|2a|1a|cc|2s|sl)\b\s*(?:class)?", 1),
+        (DocumentType.Train, @"electronic\s*reservation\s*slip|\bERS\b|\bRailOne\b|\bIRCTC\b|indian\s*railways", 5),
+        (DocumentType.Train, @"resv\.?\s*up\s*to|booked\s*from|boarding\s*at|\bquota\b|train\s*no", 3),
+        (DocumentType.Train, @"\b(?:CNF|RAC|[A-Z]{0,2}WL)/[A-Z0-9]", 3),
 
         (DocumentType.Bus, @"\bbus\b", 4),
         (DocumentType.Bus, @"boarding\s*point|dropping\s*point|pick-?up\s*point", 4),

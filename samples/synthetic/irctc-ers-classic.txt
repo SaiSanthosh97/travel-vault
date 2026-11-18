@@ -1,0 +1,11 @@
+Electronic Reservation Slip (Personal User)
+PNR No: 2647193058  Train No. & Name: 14004 / MLDT EXP  Quota: TATKAL (TQ)
+Transaction ID: 100003456789012  Date & Time Of Booking: 02-Apr-2027 11:51:41 HRS  Class: THIRD AC (3A)
+From: NEW DELHI(NDLS)  Date Of Journey: 03-Apr-2027  To: PATNA JN(PNBE)
+Boarding At: NEW DELHI(NDLS)  Date Of Boarding: 03-Apr-2027  Scheduled Departure: 03-Apr-2027 18:00 *
+Resv. Upto: PATNA JN(PNBE)  Scheduled Arrival: 04-Apr-2027 13:00 *  Adult: 1 Child: 0
+Distance: 1022KM
+PASSENGER DETAILS:
+S No. Name Age Gender Booking Status Current Status
+1 SUNIL KUMAR 45 Male CNF/B2/37/LOWER CNF/B2/37/LOWER
+Synthetic sample for testing: layout of the older IRCTC e-ticket, made-up values.

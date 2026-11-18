@@ -59,7 +59,7 @@ Core services need the unlocked session (member id, key ring), which doesn't exi
 | Home | Family switcher, sync status, **Next up** card (route, time, PNR, seat, travelers; *Open ticket*, *Boarding pass*), trip suggestions (make trip / not now), upcoming documents, ＋ (camera, photos, files, pasted text), pull to refresh |
 | Trips / Trip | Upcoming / Ongoing / Completed, trip details, rename, delete (documents stay) |
 | Search | Search-as-you-type (250 ms debounce) over FTS, type filter chips, all documents when empty |
-| Document | Legs, details (orange = check), travelers (change), linked boarding passes and **who's missing one**, trip, file versions (*Use this*), View / Show barcode / Edit / Share / Save to phone / Private / Delete, combine duplicates |
+| Document | **Ticket card** (C-023, see TD-13): provider + status, big codes and times for each leg with the travel time, a strip with PNR / coach / berth / class / gate (orange = check), passengers with their seat and status (change); then View / Show barcode, "More details" (folded), linked boarding passes and **who's missing one**, trip and file versions (*Use this*), Edit / Share / Save to phone / Private / Delete, combine duplicates |
 | Viewer | PDF pages rendered on the phone, images, text. **Barcode mode** = full brightness + screen stays on. "Getting it from family…" when the file isn't here yet. |
 | Edit | Every field incl. legs (an airport code fills city + time zone), identity number and expiry; edited fields become *UserEdited* |
 | Family | Members + last seen, invite by QR (shown with screenshots blocked, expiry time) or by message, **join requests with the 6-digit safety code**, approve/reject, make admin, remove, rename, leave, other families, sync now |
