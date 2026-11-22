@@ -56,7 +56,17 @@ public partial class EditDocumentPage : ContentPage
         if (!_loaded)
         {
             _loaded = true;
-            await _viewModel.LoadAsync();
+            try
+            {
+                await _viewModel.LoadAsync();
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                // "async void": an exception here would close the app. Show a message and go back instead.
+                Android.Util.Log.Error("TravelVault", $"{GetType().Name} failed to load: {ex}");
+                Services.Dialogs.Toast(global::TravelVault.App.Resources.Strings.AppResources.Common_LoadFailed);
+                await Services.Nav.BackAsync();
+            }
         }
     }
 }
@@ -78,7 +88,17 @@ public partial class ReviewImportPage : ContentPage
         if (!_loaded)
         {
             _loaded = true;
-            await _viewModel.LoadAsync();
+            try
+            {
+                await _viewModel.LoadAsync();
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                // "async void": an exception here would close the app. Show a message and leave the form instead.
+                Android.Util.Log.Error("TravelVault", $"Ticket form failed to load: {ex}");
+                Services.Dialogs.Toast(global::TravelVault.App.Resources.Strings.AppResources.Common_LoadFailed);
+                _viewModel.CancelCommand.Execute(null);
+            }
         }
     }
 
@@ -107,7 +127,17 @@ public partial class ViewerPage : ContentPage
         if (!_loaded)
         {
             _loaded = true;
-            await _viewModel.LoadAsync();
+            try
+            {
+                await _viewModel.LoadAsync();
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                // "async void": an exception here would close the app. Show a message and go back instead.
+                Android.Util.Log.Error("TravelVault", $"{GetType().Name} failed to load: {ex}");
+                Services.Dialogs.Toast(global::TravelVault.App.Resources.Strings.AppResources.Common_LoadFailed);
+                await Services.Nav.BackAsync();
+            }
         }
     }
 

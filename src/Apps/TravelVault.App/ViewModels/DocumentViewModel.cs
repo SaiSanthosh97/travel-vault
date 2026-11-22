@@ -81,9 +81,6 @@ public sealed partial class DocumentViewModel(VaultHost host, AppSettings settin
     [ObservableProperty]
     public partial string DuplicateText { get; set; } = "";
 
-    [ObservableProperty]
-    public partial string Warning { get; set; } = "";
-
     /// <summary>Top band of the card: the provider ("IRCTC", "IndiGo", the hotel) or the document type.</summary>
     [ObservableProperty]
     public partial string HeaderTitle { get; set; } = "";
@@ -163,7 +160,6 @@ public sealed partial class DocumentViewModel(VaultHost host, AppSettings settin
         _duplicate = DuplicateDetector.Find(doc, all).FirstOrDefault(d => d.Strength == DuplicateStrength.Strong);
         HasDuplicate = _duplicate is not null;
         DuplicateText = _duplicate is null ? "" : string.Format(AppResources.Document_Duplicate, _duplicate.Existing.Title);
-        Warning = doc.FieldConfidence.Values.Any(c => c == Confidence.Low) ? AppResources.Document_CheckWarning : "";
     }
 
     private void BuildCard(TravelDocument doc, IReadOnlyList<TravelDocument> all, IReadOnlyDictionary<string, Core.Travelers.Traveler> travelers)
@@ -209,8 +205,11 @@ public sealed partial class DocumentViewModel(VaultHost host, AppSettings settin
         {
             if (doc.Type == DocumentType.Train && first.Seat?.Split('/') is [var coach, var berth])
             {
+                // Chair cars and second sitting (coaches C…, D…, E…) have seats, not berths.
+                var seated = coach.Length > 0 && coach[0] is 'C' or 'D' or 'E'
+                    || ShortClass(first.TravelClass) is "CC" or "EC" or "EA" or "2S";
                 Chip(AppResources.Field_Coach, coach, TravelDocument.Fields.Segments);
-                Chip(AppResources.Field_Berth, berth, TravelDocument.Fields.Segments);
+                Chip(seated ? AppResources.Field_Seat : AppResources.Field_Berth, berth, TravelDocument.Fields.Segments);
             }
             else
             {
@@ -280,7 +279,7 @@ public sealed partial class DocumentViewModel(VaultHost host, AppSettings settin
         {
             if (!string.IsNullOrWhiteSpace(value))
             {
-                Chips.Add(new TicketChip(label.ToUpper(CultureInfo.CurrentCulture), value, doc.ConfidenceOf(field) == Confidence.Low));
+                Chips.Add(new TicketChip(label.ToUpper(CultureInfo.CurrentCulture), value, false)); // everything was confirmed on the form (D64): nothing is orange
             }
         }
 
@@ -288,7 +287,7 @@ public sealed partial class DocumentViewModel(VaultHost host, AppSettings settin
         {
             if (!string.IsNullOrWhiteSpace(value))
             {
-                Fields.Add(new FieldRow(label, value, doc.ConfidenceOf(field) == Confidence.Low));
+                Fields.Add(new FieldRow(label, value, false)); // everything was confirmed on the form (D64): nothing is orange
             }
         }
     }

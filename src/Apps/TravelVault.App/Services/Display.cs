@@ -64,10 +64,6 @@ public static class Display
             var days = expires.DayNumber - DateOnly.FromDateTime(now.LocalDateTime).DayNumber;
             (badge, color) = days < 0 ? (AppResources.Badge_Expired, Danger) : days <= 90 ? (string.Format(AppResources.Badge_ExpiresIn, days), Warning) : (null, null);
         }
-        else if (d.FieldConfidence.Values.Any(c => c == Confidence.Low))
-        {
-            (badge, color) = (AppResources.Badge_Check, Warning);
-        }
 
         var when = d.Identity?.ExpiresOn is { } e
             ? string.Format(AppResources.Document_ValidUntil, e.ToString("d MMM yyyy", CultureInfo.CurrentCulture))

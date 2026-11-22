@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <None Include="../../samples/synthetic/*.txt" LinkBase="samples" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../samples/synthetic/*.tsv" LinkBase="samples" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

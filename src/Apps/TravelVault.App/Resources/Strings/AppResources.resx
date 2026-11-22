@@ -27,7 +27,6 @@
   <data name="Add_Paste" xml:space="preserve"><value>Paste copied text (SMS, email)</value></data>
   <data name="Add_ClipboardEmpty" xml:space="preserve"><value>Nothing has been copied yet. Copy the booking text (for example from an SMS or email) and try again.</value></data>
   <data name="Add_NoPermission" xml:space="preserve"><value>Travel Vault needs permission to use the camera. You can allow it in Android Settings → Apps → Travel Vault.</value></data>
-  <data name="Badge_Check" xml:space="preserve"><value>Please check</value></data>
   <data name="Badge_Expired" xml:space="preserve"><value>Expired</value></data>
   <data name="Badge_ExpiresIn" xml:space="preserve"><value>Expires in {0} days</value></data>
   <data name="Type_Flight" xml:space="preserve"><value>Flight</value></data>
@@ -71,14 +70,10 @@
   <data name="Home_StartText" xml:space="preserve"><value>Create a family to keep your tickets — you can invite others later. Or join the family someone has already created.</value></data>
   <data name="Home_Switch" xml:space="preserve"><value>Switch</value></data>
   <data name="Home_ChooseFamily" xml:space="preserve"><value>Choose a family</value></data>
-  <data name="Home_NextUp" xml:space="preserve"><value>NEXT UP</value></data>
-  <data name="Home_OpenTicket" xml:space="preserve"><value>Open ticket</value></data>
-  <data name="Home_BoardingPass" xml:space="preserve"><value>Boarding pass</value></data>
   <data name="Home_Seat" xml:space="preserve"><value>Seat {0}</value></data>
   <data name="Home_SuggestTrip" xml:space="preserve"><value>These {0} documents look like one trip: “{1}”.</value></data>
   <data name="Home_GroupTrip" xml:space="preserve"><value>Make it a trip</value></data>
-  <data name="Home_Upcoming" xml:space="preserve"><value>Upcoming</value></data>
-  <data name="Home_Empty" xml:space="preserve"><value>No documents yet. Tap ＋ to add a ticket, or share one to Travel Vault from WhatsApp, Gmail or your files.</value></data>
+  <data name="Home_Empty" xml:space="preserve"><value>No journeys yet. Tap ＋ to add a ticket, or share one to Travel Vault from WhatsApp, Gmail or your files.</value></data>
   <data name="Import_Title" xml:space="preserve"><value>Add document</value></data>
   <data name="Import_NoFamily" xml:space="preserve"><value>Create or join a family first (Home or Family tab).</value></data>
   <data name="Import_Failed" xml:space="preserve"><value>This file couldn&apos;t be read. It may be damaged or password-protected.</value></data>
@@ -86,20 +81,15 @@
   <data name="Import_Unsupported" xml:space="preserve"><value>Travel Vault can store PDFs, photos, screenshots and text. This file type isn&apos;t supported.</value></data>
   <data name="Import_TooLarge" xml:space="preserve"><value>This file is larger than 25 MB and can&apos;t be added.</value></data>
   <data name="Import_Saved" xml:space="preserve"><value>Saved: {0}</value></data>
-  <data name="Review_Title" xml:space="preserve"><value>Check the details</value></data>
-  <data name="Review_Check" xml:space="preserve"><value>Some details couldn&apos;t be read for sure — they&apos;re shown in orange. You can fix them after saving.</value></data>
+  <data name="Review_Title" xml:space="preserve"><value>Your ticket</value></data>
   <data name="Review_WhoTravels" xml:space="preserve"><value>Who travels?</value></data>
-  <data name="Review_NoNames" xml:space="preserve"><value>No names were found on this document, so it will be saved for you. You can change this later.</value></data>
   <data name="Review_NewTraveler" xml:space="preserve"><value>New traveler: {0}</value></data>
   <data name="Review_NotTraveler" xml:space="preserve"><value>Not a traveler (ignore)</value></data>
-  <data name="Review_PleaseConfirm" xml:space="preserve"><value>Not sure — please confirm</value></data>
   <data name="Review_DuplicateStrong" xml:space="preserve"><value>This looks like an updated version of “{0}”.</value></data>
   <data name="Review_DuplicateWeak" xml:space="preserve"><value>This might be the same booking as “{0}”.</value></data>
   <data name="Review_MergeSwitch" xml:space="preserve"><value>Combine them (keep both files)</value></data>
-  <data name="Review_SaveAndEdit" xml:space="preserve"><value>Save and edit details</value></data>
   <data name="Document_View" xml:space="preserve"><value>View</value></data>
   <data name="Document_Barcode" xml:space="preserve"><value>Show barcode</value></data>
-  <data name="Document_CheckWarning" xml:space="preserve"><value>Values in orange were read automatically and may be wrong. Tap Edit to fix them.</value></data>
   <data name="Document_Duplicate" xml:space="preserve"><value>This may be the same booking as “{0}”.</value></data>
   <data name="Document_Merge" xml:space="preserve"><value>Combine</value></data>
   <data name="Document_MergeTitle" xml:space="preserve"><value>Combine documents?</value></data>
@@ -309,4 +299,47 @@
   <data name="Ticket_Passengers" xml:space="preserve"><value>Passengers</value></data>
   <data name="Ticket_MoreDetails" xml:space="preserve"><value>More details ▾</value></data>
   <data name="Ticket_LessDetails" xml:space="preserve"><value>Fewer details ▴</value></data>
+  <!-- The ticket form (D63) -->
+  <data name="Form_Intro" xml:space="preserve"><value>Check what was read from the ticket, fill in anything missing, and save.</value></data>
+  <data name="Form_Kind" xml:space="preserve"><value>What is it?</value></data>
+  <data name="Form_Departs" xml:space="preserve"><value>Departure</value></data>
+  <data name="Form_Arrives" xml:space="preserve"><value>Arrival</value></data>
+  <data name="Form_Starts" xml:space="preserve"><value>Starts</value></data>
+  <data name="Form_City" xml:space="preserve"><value>City</value></data>
+  <data name="Form_Venue" xml:space="preserve"><value>Place</value></data>
+  <data name="Form_Seat" xml:space="preserve"><value>Seat</value></data>
+  <data name="Form_Optional" xml:space="preserve"><value>Optional</value></data>
+  <data name="Form_CodePlaceholder" xml:space="preserve"><value>Code</value></data>
+  <data name="Form_FlightNumber" xml:space="preserve"><value>Flight no.</value></data>
+  <data name="Form_TrainNumber" xml:space="preserve"><value>Train no.</value></data>
+  <data name="Form_Airline" xml:space="preserve"><value>Airline</value></data>
+  <data name="Form_TrainName" xml:space="preserve"><value>Railway / booked with</value></data>
+  <data name="Form_Operator" xml:space="preserve"><value>Operator</value></data>
+  <data name="Form_HotelName" xml:space="preserve"><value>Hotel name</value></data>
+  <data name="Form_EventName" xml:space="preserve"><value>Event name</value></data>
+  <data name="Form_Pnr" xml:space="preserve"><value>PNR / booking reference</value></data>
+  <data name="Form_AddConnection" xml:space="preserve"><value>＋ Add a connecting journey on this ticket</value></data>
+  <data name="Form_NeedFromTo" xml:space="preserve"><value>Please fill in where the journey starts (From) and where it ends (To).</value></data>
+  <data name="Form_NeedPlace" xml:space="preserve"><value>Please fill in the place.</value></data>
+  <!-- Grouping into trips (D65) -->
+  <data name="Group_Question" xml:space="preserve"><value>Is there a return or onward journey?</value></data>
+  <data name="Group_AddNext" xml:space="preserve"><value>Yes, add that ticket now</value></data>
+  <data name="Group_AddToExisting" xml:space="preserve"><value>Add this to a trip I already have</value></data>
+  <data name="Group_No" xml:space="preserve"><value>No, just this one</value></data>
+  <data name="Group_PickTrip" xml:space="preserve"><value>Which trip?</value></data>
+  <data name="Group_Title" xml:space="preserve"><value>Added to the trip</value></data>
+  <data name="Group_AnotherQuestion" xml:space="preserve"><value>Is there another ticket for this trip?</value></data>
+  <data name="Group_AddAnother" xml:space="preserve"><value>Add another</value></data>
+  <data name="Group_Done" xml:space="preserve"><value>That's all</value></data>
+  <data name="Trip_To" xml:space="preserve"><value>Trip to {0}</value></data>
+  <data name="Trip_DefaultName" xml:space="preserve"><value>My trip</value></data>
+  <data name="Trip_AddTicket" xml:space="preserve"><value>＋ Add a ticket to this trip</value></data>
+  <data name="Trip_Onward" xml:space="preserve"><value>Onward</value></data>
+  <data name="Trip_Return" xml:space="preserve"><value>Return</value></data>
+  <data name="Trip_Journey" xml:space="preserve"><value>Journey {0}</value></data>
+  <!-- Home flash cards (D66) -->
+  <data name="Home_YourJourneys" xml:space="preserve"><value>Your journeys</value></data>
+  <data name="Home_OneJourney" xml:space="preserve"><value>1 journey</value></data>
+  <data name="Home_Journeys" xml:space="preserve"><value>{0} journeys</value></data>
+  <data name="Home_NextJourney" xml:space="preserve"><value>NEXT</value></data>
 </root>

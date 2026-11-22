@@ -3,23 +3,42 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:views="clr-namespace:TravelVault.App.Views"
              xmlns:vm="clr-namespace:TravelVault.App.ViewModels"
-             xmlns:svc="clr-namespace:TravelVault.App.Services"
              xmlns:s="clr-namespace:TravelVault.App.Resources.Strings"
              x:Class="TravelVault.App.Views.TripPage"
              x:DataType="vm:TripViewModel"
              Title="{Binding Name}">
     <ScrollView>
         <VerticalStackLayout Padding="16,8,16,32" Spacing="12">
-            <Label Text="{Binding Name}" Style="{StaticResource Heading}" FontSize="26" />
-            <Label Text="{Binding Dates}" />
-            <Label Text="{Binding StatusText}" Style="{StaticResource Subtle}" />
-            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Documents}" Spacing="8">
+            <VerticalStackLayout>
+                <Label Text="{Binding Name}" Style="{StaticResource Heading}" FontSize="26" />
+                <Label Text="{Binding Dates}" />
+                <Label Text="{Binding StatusText}" Style="{StaticResource Subtle}" />
+            </VerticalStackLayout>
+
+            <!-- The journeys in order; tap one to open its ticket -->
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Journeys}" Spacing="10">
                 <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="svc:DocumentRow">
-                        <views:DocumentRowView Row="{Binding .}" Command="{Binding OpenCommand, Source={RelativeSource AncestorType={x:Type vm:TripViewModel}}, x:DataType=vm:TripViewModel}" />
+                    <DataTemplate x:DataType="vm:TripLegRow">
+                        <Border Style="{StaticResource Card}" Padding="14,12">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OpenJourneyCommand, Source={RelativeSource AncestorType={x:Type vm:TripViewModel}}, x:DataType=vm:TripViewModel}" CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                <Label Text="{Binding Icon}" FontSize="30" VerticalOptions="Center" />
+                                <VerticalStackLayout Grid.Column="1" Spacing="1">
+                                    <Label Text="{Binding Label}" Style="{StaticResource Subtle}" FontSize="13" FontFamily="OpenSansSemibold" />
+                                    <Label Text="{Binding Route}" FontFamily="OpenSansSemibold" FontSize="18" />
+                                    <Label Text="{Binding When}" />
+                                    <Label Text="{Binding Details}" Style="{StaticResource Subtle}" IsVisible="{Binding Details, Converter={StaticResource NotEmpty}}" />
+                                </VerticalStackLayout>
+                                <Label Grid.Column="2" Text="›" FontSize="28" VerticalOptions="Center" Style="{StaticResource Subtle}" />
+                            </Grid>
+                        </Border>
                     </DataTemplate>
                 </BindableLayout.ItemTemplate>
             </VerticalStackLayout>
+
+            <Button Text="{x:Static s:AppResources.Trip_AddTicket}" Command="{Binding AddTicketCommand}" />
             <Button Text="{x:Static s:AppResources.Trip_Rename}" Command="{Binding RenameCommand}" Style="{StaticResource OutlineButton}" Margin="0,12,0,0" />
             <Button Text="{x:Static s:AppResources.Trip_Delete}" Command="{Binding DeleteCommand}" Style="{StaticResource DangerButton}" />
         </VerticalStackLayout>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
+<!-- The short form every added ticket goes through (D63): pre-filled with what was read, confirmed by the person. -->
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:TravelVault.App.ViewModels"
@@ -8,52 +9,93 @@
              Title="{x:Static s:AppResources.Review_Title}">
     <Grid>
         <ScrollView>
-            <VerticalStackLayout Padding="16,8,16,32" Spacing="12">
-                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
-                    <Label Text="{Binding Icon}" FontSize="40" VerticalOptions="Center" />
-                    <VerticalStackLayout Grid.Column="1">
-                        <Label Text="{Binding Title}" Style="{StaticResource Heading}" />
-                        <Label Text="{Binding TypeText}" Style="{StaticResource Subtle}" />
-                    </VerticalStackLayout>
-                </Grid>
-                <Label Text="{Binding Warnings}" TextColor="{StaticResource Warning}" IsVisible="{Binding Warnings, Converter={StaticResource NotEmpty}}" />
+            <VerticalStackLayout Padding="16,8,16,32" Spacing="6">
+                <Label Text="{x:Static s:AppResources.Form_Intro}" Style="{StaticResource Subtle}" Margin="0,0,0,6" />
 
-                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Fields}" Spacing="6">
-                    <BindableLayout.ItemTemplate>
-                        <DataTemplate x:DataType="vm:FieldRow">
-                            <VerticalStackLayout>
-                                <Label Text="{Binding Label}" Style="{StaticResource Subtle}" />
-                                <Label Text="{Binding Value}" FontFamily="OpenSansSemibold">
-                                    <Label.Triggers>
-                                        <DataTrigger TargetType="Label" Binding="{Binding Check}" Value="True">
-                                            <Setter Property="TextColor" Value="{StaticResource Warning}" />
-                                        </DataTrigger>
-                                    </Label.Triggers>
-                                </Label>
-                            </VerticalStackLayout>
-                        </DataTemplate>
-                    </BindableLayout.ItemTemplate>
-                </VerticalStackLayout>
+                <Label Text="{x:Static s:AppResources.Form_Kind}" Style="{StaticResource Subtle}" />
+                <Picker ItemsSource="{Binding KindNames}" SelectedIndex="{Binding KindIndex}" />
 
-                <!-- Who travels -->
-                <Label Text="{x:Static s:AppResources.Review_WhoTravels}" Style="{StaticResource SectionLabel}" />
-                <Label Text="{x:Static s:AppResources.Review_NoNames}" Style="{StaticResource Subtle}" IsVisible="{Binding NoNames}" />
-                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Names}" Spacing="8">
+                <!-- Journeys, stays, events: one card per leg -->
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Legs}" Spacing="10" IsVisible="{Binding HasLegs}">
                     <BindableLayout.ItemTemplate>
-                        <DataTemplate x:DataType="vm:NameChoice">
-                            <Border Style="{StaticResource Card}" Padding="12,8">
-                                <VerticalStackLayout>
-                                    <Label Text="{Binding RawName}" FontFamily="OpenSansSemibold" />
-                                    <Picker ItemsSource="{Binding Options}" SelectedIndex="{Binding SelectedIndex}" />
-                                    <Label Text="{Binding Hint}" TextColor="{StaticResource Warning}" IsVisible="{Binding Hint, Converter={StaticResource NotEmpty}}" />
+                        <DataTemplate x:DataType="vm:SegmentEdit">
+                            <Border Style="{StaticResource Card}" Padding="12">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="{Binding FromLabel, Source={RelativeSource AncestorType={x:Type vm:ReviewImportViewModel}}, x:DataType=vm:ReviewImportViewModel}" Style="{StaticResource Subtle}" />
+                                    <Grid ColumnDefinitions="3*,*" ColumnSpacing="8">
+                                        <Entry Text="{Binding FromName}" Placeholder="{x:Static s:AppResources.Edit_PlacePlaceholder}" />
+                                        <Entry Grid.Column="1" Text="{Binding FromCode}" Placeholder="{x:Static s:AppResources.Form_CodePlaceholder}" MaxLength="5" />
+                                    </Grid>
+                                    <VerticalStackLayout IsVisible="{Binding HasDestination}" Spacing="4">
+                                        <Label Text="{x:Static s:AppResources.Edit_To}" Style="{StaticResource Subtle}" />
+                                        <Grid ColumnDefinitions="3*,*" ColumnSpacing="8">
+                                            <Entry Text="{Binding ToName}" Placeholder="{x:Static s:AppResources.Edit_PlacePlaceholder}" />
+                                            <Entry Grid.Column="1" Text="{Binding ToCode}" Placeholder="{x:Static s:AppResources.Form_CodePlaceholder}" MaxLength="5" />
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                    <Label Text="{Binding DepartLabel, Source={RelativeSource AncestorType={x:Type vm:ReviewImportViewModel}}, x:DataType=vm:ReviewImportViewModel}" Style="{StaticResource Subtle}" />
+                                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                                        <DatePicker Date="{Binding DepartDate}" Format="ddd d MMM yyyy" />
+                                        <TimePicker Grid.Column="1" Time="{Binding DepartTime}" Format="HH:mm" />
+                                    </Grid>
+                                    <VerticalStackLayout IsVisible="{Binding HasArrival}" Spacing="4">
+                                        <Label Text="{Binding ArriveLabel, Source={RelativeSource AncestorType={x:Type vm:ReviewImportViewModel}}, x:DataType=vm:ReviewImportViewModel}" Style="{StaticResource Subtle}" />
+                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                                            <DatePicker Date="{Binding ArriveDate}" Format="ddd d MMM yyyy" />
+                                            <TimePicker Grid.Column="1" Time="{Binding ArriveTime}" Format="HH:mm" />
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8" IsVisible="{Binding HasDestination}">
+                                        <VerticalStackLayout>
+                                            <Label Text="{x:Static s:AppResources.Form_Seat}" Style="{StaticResource Subtle}" />
+                                            <Entry Text="{Binding Seat}" Placeholder="{x:Static s:AppResources.Form_Optional}" />
+                                        </VerticalStackLayout>
+                                        <VerticalStackLayout Grid.Column="1">
+                                            <Label Text="{Binding NumberLabel, Source={RelativeSource AncestorType={x:Type vm:ReviewImportViewModel}}, x:DataType=vm:ReviewImportViewModel}" Style="{StaticResource Subtle}" />
+                                            <Entry Text="{Binding ServiceNumber}" Placeholder="{x:Static s:AppResources.Form_Optional}" />
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                    <Button Text="{x:Static s:AppResources.Edit_RemoveLeg}" Style="{StaticResource LinkButton}" HorizontalOptions="Start"
+                                            Command="{Binding RemoveLegCommand, Source={RelativeSource AncestorType={x:Type vm:ReviewImportViewModel}}, x:DataType=vm:ReviewImportViewModel}" CommandParameter="{Binding .}" />
                                 </VerticalStackLayout>
                             </Border>
                         </DataTemplate>
                     </BindableLayout.ItemTemplate>
                 </VerticalStackLayout>
+                <Button Text="{x:Static s:AppResources.Form_AddConnection}" Command="{Binding AddLegCommand}" Style="{StaticResource LinkButton}" HorizontalOptions="Start" IsVisible="{Binding IsJourney}" />
+
+                <!-- Passport / visa -->
+                <VerticalStackLayout IsVisible="{Binding IsIdentity}" Spacing="4">
+                    <Label Text="{x:Static s:AppResources.Field_DocumentNumber}" Style="{StaticResource Subtle}" />
+                    <Entry Text="{Binding IdentityNumber}" MaxLength="30" />
+                    <Label Text="{x:Static s:AppResources.Field_Country}" Style="{StaticResource Subtle}" />
+                    <Entry Text="{Binding IdentityCountry}" MaxLength="40" />
+                    <Label Text="{x:Static s:AppResources.Field_Expires}" Style="{StaticResource Subtle}" />
+                    <DatePicker Date="{Binding ExpiresOn}" Format="d MMM yyyy" />
+                </VerticalStackLayout>
+
+                <!-- Who travels -->
+                <Label Text="{x:Static s:AppResources.Review_WhoTravels}" Style="{StaticResource Subtle}" Margin="0,8,0,0" />
+                <Picker ItemsSource="{Binding TravelerNames}" SelectedIndex="{Binding TravelerIndex}" IsVisible="{Binding NoNames}" />
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Names}" Spacing="4">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:NameChoice">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding RawName}" FontSize="14" />
+                                <Picker ItemsSource="{Binding Options}" SelectedIndex="{Binding SelectedIndex}" />
+                            </VerticalStackLayout>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+                <!-- Optional extras -->
+                <Label Text="{Binding ProviderLabel}" Style="{StaticResource Subtle}" Margin="0,8,0,0" IsVisible="{Binding IsIdentity, Converter={StaticResource Not}}" />
+                <Entry Text="{Binding Provider}" MaxLength="80" Placeholder="{x:Static s:AppResources.Form_Optional}" IsVisible="{Binding IsIdentity, Converter={StaticResource Not}}" />
+                <Label Text="{x:Static s:AppResources.Form_Pnr}" Style="{StaticResource Subtle}" IsVisible="{Binding IsIdentity, Converter={StaticResource Not}}" />
+                <Entry Text="{Binding Pnr}" MaxLength="30" Placeholder="{x:Static s:AppResources.Form_Optional}" IsVisible="{Binding IsIdentity, Converter={StaticResource Not}}" />
 
                 <!-- Duplicate -->
-                <Border Style="{StaticResource Card}" Padding="14" IsVisible="{Binding HasDuplicate}">
+                <Border Style="{StaticResource Card}" Padding="14" IsVisible="{Binding HasDuplicate}" Margin="0,8,0,0">
                     <VerticalStackLayout Spacing="6">
                         <Label Text="{Binding DuplicateText}" />
                         <Grid ColumnDefinitions="*,Auto">
@@ -63,8 +105,7 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <Button Text="{x:Static s:AppResources.Common_Save}" Command="{Binding SaveCommand}" Margin="0,8,0,0" />
-                <Button Text="{x:Static s:AppResources.Review_SaveAndEdit}" Command="{Binding SaveAndEditCommand}" Style="{StaticResource OutlineButton}" />
+                <Button Text="{x:Static s:AppResources.Common_Save}" Command="{Binding SaveCommand}" Margin="0,12,0,0" />
                 <Button Text="{x:Static s:AppResources.Common_Cancel}" Command="{Binding CancelCommand}" Style="{StaticResource LinkButton}" />
             </VerticalStackLayout>
         </ScrollView>

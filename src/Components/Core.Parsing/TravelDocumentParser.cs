@@ -23,7 +23,8 @@ public static partial class TravelDocumentParser
     public static ParsedDocument Parse(ExtractedContent content, DateOnly reference)
     {
         // Read the page as a form first (labels and the values beside or below them), then as text.
-        var reading = FormReader.Read(content.Layout ?? TextLayout.FromGrid(content.Text));
+        var layout = content.Layout ?? TextLayout.FromGrid(content.Text);
+        var reading = FormReader.Read(layout);
         var facts = TextFacts.Analyze(content.Text, reference, reading.Fields);
         var mrz = MrzParser.Find(content.Text, reference);
         var (type, typeConfidence) = DocumentClassifier.Classify(facts, content.Barcodes, mrz);
@@ -37,11 +38,11 @@ public static partial class TravelDocumentParser
                 ParseBoardingPass(result, facts, content.Barcodes, reference);
                 break;
             case DocumentType.Flight:
-                ParseFlight(result, facts);
+                ParseFlight(result, facts, layout);
                 break;
             case DocumentType.Train:
             case DocumentType.Bus:
-                ParseGroundTravel(result, facts, type == DocumentType.Train ? TravelMode.Train : TravelMode.Bus);
+                ParseGroundTravel(result, facts, layout, type == DocumentType.Train ? TravelMode.Train : TravelMode.Bus);
                 break;
             case DocumentType.Hotel:
                 ParseHotel(result, facts);
@@ -58,7 +59,7 @@ public static partial class TravelDocumentParser
                 AddNames(result, facts);
                 if (FindAirportRoutes(facts).Count > 0)
                 {
-                    ParseFlight(result, facts); // unclassified but has an airport route: treat as flight, low confidence
+                    ParseFlight(result, facts, layout); // unclassified but has an airport route: treat as flight, low confidence
                     result.Type = DocumentType.Flight;
                     result.Set(F.Type, Confidence.Low);
                 }
@@ -130,7 +131,7 @@ public static partial class TravelDocumentParser
 
     // ---------------- Flight ----------------
 
-    private static void ParseFlight(ParsedDocument result, TextFacts facts)
+    private static void ParseFlight(ParsedDocument result, TextFacts facts, TextLayout? layout = null)
     {
         ParseReferences(result, facts, flight: true);
         var routes = FindAirportRoutes(facts);
@@ -141,6 +142,29 @@ public static partial class TravelDocumentParser
 
         var flights = FlightNumbers(facts);
         var used = new HashSet<DateTimeMention>();
+
+        // Legs printed as cards (departure left, arrival right): read by position, one segment per card.
+        var cards = layout is null ? [] : FlightCards(layout, facts.Reference);
+        if (cards.Count > 0 && cards.Count >= routes.Count && cards.All(c => c.Departs is not null))
+        {
+            routes.Clear();
+            foreach (var card in cards)
+            {
+                result.Segments.Add(new Segment
+                {
+                    Id = Ids.New(),
+                    Mode = TravelMode.Flight,
+                    From = card.From,
+                    To = card.To,
+                    Departs = new LocalDateTimeZ(card.Departs!.ToDateTime(), card.From.TimeZoneId),
+                    Arrives = card.Arrives is null ? null : new LocalDateTimeZ(card.Arrives.ToDateTime(), card.To.TimeZoneId),
+                    CarrierCode = card.CarrierCode,
+                    ServiceNumber = card.CarrierCode is null ? null : $"{card.CarrierCode} {card.Number}",
+                    Seat = cards.Count == 1 ? Seat(facts) : null,
+                    TravelClass = TravelClass(facts),
+                });
+            }
+        }
 
         for (var i = 0; i < routes.Count; i++)
         {
@@ -177,7 +201,7 @@ public static partial class TravelDocumentParser
 
         // One flight whose date and time are printed under separate labels ("Date 08Apr17 … Departure Time 14:40").
         // The labelled departure time wins over a time that only shares the date's line (often the boarding time).
-        if (result.Segments.Count == 1 && result.Segments[0] is var only
+        if (routes.Count == 1 && result.Segments.Count == 1 && result.Segments[0] is var only
             && DateAndTime(facts, @"depart(?:ure|s)?|dep\b|std", DateLabels, @"departure\s*time|^departs?$|^dep$|^std$|^time$") is { Time: not null } labelledTime
             && (only.Departs is not { } current || !current.HasTime || DateOnly.FromDateTime(current.Local) == labelledTime.Date))
         {
@@ -353,7 +377,21 @@ public static partial class TravelDocumentParser
         result.AddDetail("Gate", facts.FieldValue("gate") is { } gate ? FirstToken(gate) : null);
         result.AddDetail("Boarding time", facts.LabelValue(@"boarding\s*time") is { } boarding && TextFacts.FirstTime(boarding) is { } t ? t.ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture) : null);
         result.AddDetail("E-ticket", facts.FieldValue(@"e-?ticket\s*(?:no\.?|number)") is { } eticket ? TextFacts.FirstCode(eticket) : null);
+
+        // Booked through a travel site (MakeMyTrip, Goibibo…): who to contact for changes, and when it was booked.
+        if (KnownProviders.Find(facts.Text) is { Hint: DocumentType.Other } site)
+        {
+            result.AddDetail("Booked via", site.Name);
+        }
+
+        if (BookedOn().Match(facts.Text) is { Success: true } booked && TextFacts.Analyze(booked.Groups[1].Value, facts.Reference).DateTimes.FirstOrDefault() is { } on)
+        {
+            result.AddDetail("Booked on", on.Date.ToString("d MMM yyyy", System.Globalization.CultureInfo.InvariantCulture));
+        }
     }
+
+    [GeneratedRegex(@"\bbooked\s+on\s*:?\s*([^\n)]{6,30})", RegexOptions.IgnoreCase)]
+    private static partial Regex BookedOn();
 
     /// <summary>Flight numbers with a known airline designator: "6E 2345", "AI-101", "EK512".</summary>
     internal static List<(string? Code, string Number)> FlightNumbers(TextFacts facts)
@@ -381,20 +419,39 @@ public static partial class TravelDocumentParser
     private const string DateLabels = @"date\s*of\s*(?:journey|boarding|travel)|journey\s*date|travel\s*date|start\s*date|flight\s*date|^date$";
     private const string ArriveLabels = @"arriv(?:al|es)|arr\b|drop(?:ping)?\s*time|reach(?:es)?";
 
-    private static void ParseGroundTravel(ParsedDocument result, TextFacts facts, TravelMode mode)
+    private static void ParseGroundTravel(ParsedDocument result, TextFacts facts, TextLayout layout, TravelMode mode)
     {
         ParseReferences(result, facts);
         var indianRail = mode == TravelMode.Train && IndianRail().IsMatch(facts.Text);
         var (from, to) = GroundRoute(facts, mode, indianRail);
-        var departs = DateAndTime(facts, DepartLabels, DateLabels, @"departure\s*time|boarding\s*time|^departs?$|^dep$");
-        var arrives = DateAndTime(facts, ArriveLabels, null, @"arrival\s*time|drop(?:ping)?\s*time|^arrives?$", departs);
+
+        // No labelled stations: an app ticket card (stations in two columns, codes underneath, times above).
+        var card = from is null && mode == TravelMode.Train ? RailAppCard(layout, facts.Reference) : null;
+        if (card is not null)
+        {
+            (from, to, indianRail) = (card.From, card.To, true);
+        }
+
+        var departs = card is not null ? card.Departs : DateAndTime(facts, DepartLabels, DateLabels, @"departure\s*time|boarding\s*time|^departs?$|^dep$");
+        var arrives = card is not null ? card.Arrives : DateAndTime(facts, ArriveLabels, null, @"arrival\s*time|drop(?:ping)?\s*time|^arrives?$", departs);
         if (arrives is not null && departs is not null && arrives.ToDateTime() <= departs.ToDateTime())
         {
             arrives = null;
         }
 
         var passengers = mode == TravelMode.Train ? RailPassengers(facts) : [];
+        if (mode == TravelMode.Train && passengers.Count == 0)
+        {
+            passengers = LayoutRailPassengers(layout);
+        }
+
         var (trainNumber, trainName) = mode == TravelMode.Train ? Train(facts) : (null, null);
+        if (card?.TrainNumber is not null && (trainNumber is null || trainNumber == card.TrainNumber))
+        {
+            (trainNumber, trainName) = (card.TrainNumber, trainName ?? card.TrainName);
+        }
+
+        var (railClass, railQuota) = mode == TravelMode.Train ? RailSummary(facts) : (null, null);
         if (from is not null)
         {
             result.Segments.Add(new Segment
@@ -408,7 +465,7 @@ public static partial class TravelDocumentParser
                 ServiceNumber = mode == TravelMode.Train ? trainNumber : facts.LabelValue(@"bus\s*(?:no|number)|vehicle\s*(?:no|number)") is { } bus ? First(bus, 20) : null,
                 ServiceName = trainName,
                 Seat = mode == TravelMode.Train ? Berth(facts) ?? passengers.Select(p => p.Seat).FirstOrDefault(s => s is not null) : BusSeat(facts),
-                TravelClass = facts.LabelValue(@"class|coach\s*type|bus\s*type") is { } cls ? First(cls, 30) : null,
+                TravelClass = facts.LabelValue(@"class|coach\s*type|bus\s*type") is { } cls ? First(cls, 30) : railClass is null ? null : DescribeRailClass(railClass),
             });
         }
 
@@ -440,7 +497,7 @@ public static partial class TravelDocumentParser
         AddNames(result, facts);
         if (mode == TravelMode.Train)
         {
-            RailDetails(result, facts, passengers, from);
+            RailDetails(result, facts, passengers, from, railQuota);
         }
         else
         {
@@ -713,7 +770,7 @@ public static partial class TravelDocumentParser
         };
     }
 
-    private static void RailDetails(ParsedDocument result, TextFacts facts, List<RailPassenger> passengers, Place? from)
+    private static void RailDetails(ParsedDocument result, TextFacts facts, List<RailPassenger> passengers, Place? from, string? quotaFromSummary = null)
     {
         if (passengers.FirstOrDefault(p => p.CurrentStatus is not null) is { } first)
         {
@@ -725,7 +782,7 @@ public static partial class TravelDocumentParser
             result.AddDetail(p.Name, p.StatusText);
         }
 
-        result.AddDetail("Quota", facts.FieldValue("quota") is { } quota ? First(quota, 30) : null);
+        result.AddDetail("Quota", facts.FieldValue("quota") is { } quota ? First(quota, 30) : quotaFromSummary);
         result.AddDetail("Distance", facts.FieldValue("distance") is { } distance ? First(distance, 20) : null);
         if (facts.FieldValue(@"booked\s*from") is { } bookedFrom && from is not null && StationPlace(bookedFrom).Code is { } code && code != from.Code)
         {
@@ -733,7 +790,7 @@ public static partial class TravelDocumentParser
         }
 
         result.AddDetail("Transaction ID", facts.FieldValue(@"transaction\s*id") is { } txn ? FirstToken(txn) : null);
-        result.AddDetail("Booked on", facts.FieldValue(@"date\s*(?:&|and)\s*time\s*of\s*booking|booking\s*date|date\s*of\s*booking|ticket\s*printing\s*time") is { } booked ? First(booked, 30) : null);
+        result.AddDetail("Booked on", facts.FieldValue(@"date\s*(?:&|and)\s*time\s*of\s*booking|booking\s*date|date\s*of\s*booking|ticket\s*printing\s*time|booked\s*on") is { } booked ? First(booked, 30) : null);
     }
 
     private static void BusDetails(ParsedDocument result, TextFacts facts)
@@ -868,7 +925,7 @@ public static partial class TravelDocumentParser
     private static void ParseReferences(ParsedDocument result, TextFacts facts, bool flight = false)
     {
         result.Pnr = facts.LabelCode(@"airline\s*pnr", @"pnr", @"record\s*locator", @"reservation\s*code", @"airline\s*(?:booking\s*)?ref(?:erence)?");
-        result.BookingReference = facts.LabelCode(
+        result.BookingReference = LongBookingId(facts) ?? facts.LabelCode(
             @"booking\s*(?:id|ref(?:erence)?|code|number|no)",
             @"confirmation\s*(?:code|number|no|#)?",
             @"reservation\s*(?:id|number|no)",
@@ -897,6 +954,17 @@ public static partial class TravelDocumentParser
             result.Set(F.BookingReference, Confidence.High);
         }
     }
+
+    /// <summary>
+    /// Travel-site booking IDs are longer than airline or rail codes ("NN2ANCVR28576564002" on MakeMyTrip): letters and
+    /// digits, 15–24 characters, right after "Booking ID".
+    /// </summary>
+    private static string? LongBookingId(TextFacts facts) =>
+        facts.LabelValue(@"booking\s*id") is { } value
+        && value.Split([' ', ',', '(', ';', '|'], StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim('.', ':', '#') is { Length: >= 15 and <= 24 } token
+        && token.All(char.IsAsciiLetterOrDigit) && token.Any(char.IsAsciiDigit) && token.Any(char.IsAsciiLetter)
+            ? token.ToUpperInvariant()
+            : null;
 
     private static void AddNames(ParsedDocument result, TextFacts facts)
     {

@@ -42,28 +42,48 @@
                         </VerticalStackLayout>
                     </Border>
 
-                    <!-- Next up -->
-                    <Border Style="{StaticResource Card}" Padding="16" IsVisible="{Binding HasNextUp}">
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding OpenNextUpCommand}" />
-                        </Border.GestureRecognizers>
-                        <VerticalStackLayout Spacing="6">
-                            <Label Text="{x:Static s:AppResources.Home_NextUp}" Style="{StaticResource Subtle}" FontFamily="OpenSansSemibold" />
-                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
-                                <Label Text="{Binding NextUpIcon}" FontSize="36" VerticalOptions="Center" />
-                                <VerticalStackLayout Grid.Column="1">
-                                    <Label Text="{Binding NextUpTitle}" FontFamily="OpenSansSemibold" FontSize="22" />
-                                    <Label Text="{Binding NextUpWhen}" FontSize="20" />
-                                </VerticalStackLayout>
-                            </Grid>
-                            <Label Text="{Binding NextUpDetails}" Style="{StaticResource Subtle}" />
-                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,6,0,0">
-                                <Button Text="{x:Static s:AppResources.Home_OpenTicket}" Command="{Binding OpenNextUpCommand}" />
-                                <Button Grid.Column="1" Text="{x:Static s:AppResources.Home_BoardingPass}" Command="{Binding OpenBoardingPassCommand}"
-                                        Style="{StaticResource OutlineButton}" IsVisible="{Binding NextUpHasBoardingPass}" />
-                            </Grid>
-                        </VerticalStackLayout>
-                    </Border>
+                    <!-- Journey flash cards (D66): one per upcoming or ongoing trip, swiped sideways -->
+                    <Label Text="{x:Static s:AppResources.Home_YourJourneys}" Style="{StaticResource SectionLabel}" IsVisible="{Binding HasCards}" />
+                    <CollectionView ItemsSource="{Binding Cards}" IsVisible="{Binding HasCards}" HeightRequest="250" Margin="-16,0">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Horizontal" ItemSpacing="12" SnapPointsType="MandatorySingle" SnapPointsAlignment="Center" />
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.Header>
+                            <BoxView WidthRequest="4" Color="Transparent" />
+                        </CollectionView.Header>
+                        <CollectionView.Footer>
+                            <BoxView WidthRequest="4" Color="Transparent" />
+                        </CollectionView.Footer>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="vm:JourneyCard">
+                                <Border WidthRequest="320" Padding="18,16" StrokeThickness="0" BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}">
+                                    <Border.StrokeShape><RoundRectangle CornerRadius="20" /></Border.StrokeShape>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding OpenCardCommand, Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, x:DataType=vm:HomeViewModel}" CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="2">
+                                        <Label Text="{Binding Name}" FontFamily="OpenSansSemibold" FontSize="22" LineBreakMode="TailTruncation" MaxLines="1"
+                                               TextColor="{AppThemeBinding Light={StaticResource OnPrimary}, Dark={StaticResource OnPrimaryDark}}" />
+                                        <Label Grid.Row="1" Text="{Binding Summary}" FontSize="15" TextColor="{AppThemeBinding Light={StaticResource OnPrimary}, Dark={StaticResource OnPrimaryDark}}" />
+                                        <Grid Grid.Row="2" ColumnDefinitions="Auto,*" ColumnSpacing="12" VerticalOptions="Center">
+                                            <Label Text="{Binding Icon}" FontSize="38" VerticalOptions="Center" />
+                                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                                <Label Text="{Binding NextLabel}" FontSize="12" FontFamily="OpenSansSemibold" IsVisible="{Binding NextLabel, Converter={StaticResource NotEmpty}}"
+                                                       TextColor="{AppThemeBinding Light={StaticResource OnPrimary}, Dark={StaticResource OnPrimaryDark}}" Opacity="0.85" />
+                                                <Label Text="{Binding NextRoute}" FontFamily="OpenSansSemibold" FontSize="19" MaxLines="2" LineBreakMode="TailTruncation"
+                                                       TextColor="{AppThemeBinding Light={StaticResource OnPrimary}, Dark={StaticResource OnPrimaryDark}}" />
+                                                <Label Text="{Binding NextWhen}" FontSize="16"
+                                                       TextColor="{AppThemeBinding Light={StaticResource OnPrimary}, Dark={StaticResource OnPrimaryDark}}" />
+                                            </VerticalStackLayout>
+                                        </Grid>
+                                        <Label Grid.Row="3" Text="{Binding NextDetails}" FontSize="14" MaxLines="2" LineBreakMode="TailTruncation" Opacity="0.9"
+                                               TextColor="{AppThemeBinding Light={StaticResource OnPrimary}, Dark={StaticResource OnPrimaryDark}}" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <Label Text="{x:Static s:AppResources.Home_Empty}" Style="{StaticResource Subtle}" IsVisible="{Binding IsEmpty}" />
 
                     <!-- Trip suggestions -->
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding Suggestions}" Spacing="8">
@@ -83,17 +103,6 @@
                         </BindableLayout.ItemTemplate>
                     </VerticalStackLayout>
 
-                    <!-- Upcoming -->
-                    <Label Text="{x:Static s:AppResources.Home_Upcoming}" Style="{StaticResource SectionLabel}" IsVisible="{Binding HasFamily}" />
-                    <Label Text="{x:Static s:AppResources.Home_Empty}" Style="{StaticResource Subtle}" IsVisible="{Binding IsEmpty}" />
-                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Upcoming}" Spacing="8">
-                        <BindableLayout.ItemTemplate>
-                            <DataTemplate x:DataType="svc:DocumentRow">
-                                <views:DocumentRowView Row="{Binding .}"
-                                    Command="{Binding OpenCommand, Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, x:DataType=vm:HomeViewModel}" />
-                            </DataTemplate>
-                        </BindableLayout.ItemTemplate>
-                    </VerticalStackLayout>
                 </VerticalStackLayout>
             </ScrollView>
         </RefreshView>

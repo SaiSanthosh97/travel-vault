@@ -88,9 +88,67 @@ public sealed partial class TripsViewModel(VaultHost host, ImportCoordinator imp
     private Task OpenAsync(TripRow row) => row.IsDocument ? Nav.DocumentAsync(row.Id) : Nav.GoAsync($"trip?id={row.Id}");
 }
 
-/// <summary>One trip: its documents in order, rename, delete the trip (documents stay in the vault).</summary>
-public sealed partial class TripViewModel(VaultHost host, Dialogs dialogs) : ObservableObject, IQueryAttributable, ILoads
+/// <summary>One journey (ticket) in a trip: "ONWARD · ✈ Raipur → Hyderabad · Mon 12 Dec, 06:10 → 08:05 · Seat 12A".</summary>
+public sealed record TripLegRow(string Id, string Label, string Icon, string Route, string When, string Details);
+
+/// <summary>
+/// One trip (D65): its journeys in order (Onward / Return, or Journey 1, 2, 3…), each opening its ticket; add a ticket to
+/// the trip, rename, delete the trip (documents stay in the vault).
+/// </summary>
+public sealed partial class TripViewModel(VaultHost host, Dialogs dialogs, ImportCoordinator importer) : ObservableObject, IQueryAttributable, ILoads
 {
+    public ObservableCollection<TripLegRow> Journeys { get; } = [];
+
+    [RelayCommand]
+    private Task OpenJourneyAsync(TripLegRow row) => Nav.DocumentAsync(row.Id);
+
+    [RelayCommand]
+    private async Task AddTicketAsync()
+    {
+        importer.PendingTripId = _id;
+        await importer.AddAsync();
+    }
+
+    /// <summary>Labels for the trip's tickets in order: two transport tickets are Onward and Return, more are numbered.</summary>
+    internal static IReadOnlyList<TripLegRow> Rows(IReadOnlyList<TravelDocument> documents, IReadOnlyDictionary<string, Core.Travelers.Traveler> travelers)
+    {
+        var transport = documents.Where(d => d.Type is DocumentType.Flight or DocumentType.Train or DocumentType.Bus or DocumentType.Other or DocumentType.BoardingPass && d.Segments.Count > 0).ToList();
+        var number = 0;
+        var rows = new List<TripLegRow>();
+        foreach (var doc in documents)
+        {
+            var first = doc.Segments.FirstOrDefault();
+            var last = doc.Segments.LastOrDefault();
+            string label;
+            if (transport.Contains(doc))
+            {
+                number++;
+                label = transport.Count == 2 ? (number == 1 ? AppResources.Trip_Onward : AppResources.Trip_Return) : string.Format(AppResources.Trip_Journey, number);
+            }
+            else
+            {
+                label = Display.TypeName(doc.Type);
+            }
+
+            var route = first is null ? doc.Title
+                : doc.Segments.Count == 1 ? Display.Route(first)
+                : string.Join(" → ", doc.Segments.Select(s => s.From.Display).Append(last!.To?.Display ?? ""));
+            var when = first?.Departs is { } dep
+                ? Display.When(dep) + (last?.Arrives is { } arr ? " → " + (arr.Local.Date == dep.Local.Date ? arr.Local.ToString("HH:mm", System.Globalization.CultureInfo.CurrentCulture) : Display.When(arr)) : "")
+                : "";
+            var details = string.Join(" · ", new[]
+            {
+                string.Join(", ", doc.Segments.Select(s => s.ServiceNumber).Where(n => n is not null)),
+                first?.Seat is { } seat ? string.Format(AppResources.Home_Seat, seat) : null,
+                doc.Pnr is null ? null : "PNR " + doc.Pnr,
+                Display.Travelers(doc, travelers),
+            }.Where(x => !string.IsNullOrWhiteSpace(x)));
+            rows.Add(new TripLegRow(doc.Id, label.ToUpperInvariant(), Display.Icon(doc.Type), route, when, details));
+        }
+
+        return rows;
+    }
+
     private string _id = "";
 
     [ObservableProperty]
@@ -101,8 +159,6 @@ public sealed partial class TripViewModel(VaultHost host, Dialogs dialogs) : Obs
 
     [ObservableProperty]
     public partial string StatusText { get; set; } = "";
-
-    public ObservableCollection<DocumentRow> Documents { get; } = [];
 
     public void ApplyQueryAttributes(IDictionary<string, object> query) => _id = query["id"]?.ToString() ?? "";
 
@@ -125,15 +181,12 @@ public sealed partial class TripViewModel(VaultHost host, Dialogs dialogs) : Obs
             TripStatus.Ongoing => AppResources.Trips_Ongoing,
             _ => AppResources.Trips_Completed,
         };
-        Documents.Clear();
-        foreach (var doc in view.Documents)
+        Journeys.Clear();
+        foreach (var row in Rows(view.Documents, travelers))
         {
-            Documents.Add(Display.Row(doc, travelers, s.Session.Now));
+            Journeys.Add(row);
         }
     }
-
-    [RelayCommand]
-    private Task OpenAsync(DocumentRow row) => Nav.DocumentAsync(row.Id);
 
     [RelayCommand]
     private async Task RenameAsync()

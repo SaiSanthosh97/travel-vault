@@ -15,7 +15,6 @@
     <ScrollView>
         <VerticalStackLayout Padding="16,12,16,32" Spacing="14">
 
-            <Label Text="{Binding Warning}" TextColor="{StaticResource Warning}" IsVisible="{Binding Warning, Converter={StaticResource NotEmpty}}" />
 
             <!-- Possible duplicate -->
             <Border Style="{StaticResource Card}" Padding="14" IsVisible="{Binding HasDuplicate}">

@@ -247,12 +247,26 @@ ntfy.sh keeps messages ~12h and files ~3h. A phone that is away longer sends a *
 | D54 | Change management | Changes stay possible. **Every change** to requirements, design or code behaviour is recorded in [docs/CHANGES.md](docs/CHANGES.md) (what, why, which documents were updated). |
 | D55 | Technical design docs | For **every implemented feature**, a technical design document goes in [docs/technical/](docs/technical/README.md), covering minor to major details: how it works, **why this approach**, alternatives rejected, trade-offs, edge cases, testing, and interview Q&A. |
 
+## Round 14 — Simpler flow (2026-11-22)
+
+The user: "we are complicating too much". Answers to the questions asked: pre-fill and confirm; one Home card per trip; hotels/events/IDs keep a short form; the unreleased v0.1.3 work is folded into this release.
+
+| # | Topic | Decision |
+|---|-------|----------|
+| D63 | Adding a ticket (supersedes the "save straight away when confident" part of J3) | Every added or shared ticket opens **one short form**: mode of transport, from, to, departure date + time, arrival date + time, who travels, seat (optional), number and PNR (optional). What the app could read is **pre-filled**; the person confirms or corrects and saves. Hotels: name, city, check-in, check-out. Events: name, place, start. Passport/visa: number, country, expiry. (C-030) |
+| D64 | No orange | Because every value is confirmed before saving, nothing is shown in orange and there is no "check the orange values" message anywhere. (C-030; replaces FR-D6 and D61) |
+| D65 | Grouping into trips | After saving a journey the app asks **"Is there a return or onward journey?"**: add the next ticket now (it joins the same trip), add this one to an existing trip, or no. A new trip is named **"Trip to <destination>"** by default and can be renamed. A trip shows its journeys in order (Onward / Return, or Journey 1, 2, 3…); tapping one opens its ticket; "Add a ticket to this trip" is on the trip screen. (C-031) |
+| D66 | Home | Home shows **flash cards, one per upcoming or ongoing trip** (a single ticket not in a trip is its own card), soonest first, swiped sideways. Each card: trip name, dates, number of journeys, the next journey (route, date and time, seat). Tapping opens the trip (or the ticket). (C-032) |
+
 ## Round 13 — Daily use feedback (2026-11-18)
 
 | # | Topic | Decision |
 |---|-------|----------|
 | D58 | Reading tickets (extends D34) | Tickets are read **by layout**: a value can be beside its label or under it. Supported layouts: IRCTC/RailOne (all three slip formats, passenger table, berth codes), IndiGo, Air India / Akasa (generic airline rules), MakeMyTrip / Goibibo / Cleartrip / ixigo (travel-site e-tickets), redBus, Booking.com / OYO. Still no AI and still on the phone. (C-022) |
 | D59 | Document screen | The document screen is a **ticket card**: route, times, PNR, seat and passengers first; other details folded. (C-023) |
+| D60 | RailOne app screenshots (extends D58) | A screenshot of the RailOne ticket screen is read **by placement** (stations left/right, codes below, times above, train number over its name), since nothing on it is labelled. (C-026) |
+| D62 | Multi-leg flight e-tickets (extends D58) | Each flight card on a travel-site e-ticket (departure left, arrival right, date under each, flight number beside) becomes its own segment, so connections and return flights are separate legs with their own times. (C-029) |
+| D61 | "Please check" message | The warning names **what** to check (journey, passengers, PNR…), or says the journey couldn't be read, instead of pointing at orange values the card may not show. (C-027) |
 
 ## Round 12 — After the first build (2026-11-17)
 

@@ -13,6 +13,15 @@ namespace TravelVault.App.ViewModels;
 public sealed record SuggestionRow(TripSuggestion Suggestion, string Text);
 
 /// <summary>
+/// A Home flash card (D66): one upcoming or ongoing trip, or a single ticket that isn't in a trip, with its next journey.
+/// </summary>
+public sealed record JourneyCard(string Id, bool IsDocument, string Name, string Dates, string Count, string Icon, string NextLabel, string NextRoute, string NextWhen, string NextDetails)
+{
+    /// <summary>"12–18 Dec 2026  ·  3 journeys", without separators for missing parts.</summary>
+    public string Summary => string.Join("  ·  ", new[] { Dates, Count }.Where(s => s.Length > 0));
+}
+
+/// <summary>
 /// Home: the next thing to use (FR-R4) with one tap to the ticket, trip suggestions to confirm (FR-R2), upcoming
 /// documents, adding documents (camera, photo, file, pasted text), and the sync status.
 /// </summary>
@@ -37,24 +46,6 @@ public sealed partial class HomeViewModel(VaultHost host, AppSettings settings, 
     public partial bool Removed { get; set; }
 
     [ObservableProperty]
-    public partial bool HasNextUp { get; set; }
-
-    [ObservableProperty]
-    public partial string NextUpTitle { get; set; } = "";
-
-    [ObservableProperty]
-    public partial string NextUpWhen { get; set; } = "";
-
-    [ObservableProperty]
-    public partial string NextUpDetails { get; set; } = "";
-
-    [ObservableProperty]
-    public partial string NextUpIcon { get; set; } = "";
-
-    [ObservableProperty]
-    public partial bool NextUpHasBoardingPass { get; set; }
-
-    [ObservableProperty]
     public partial string SyncStatus { get; set; } = "";
 
     [ObservableProperty]
@@ -62,11 +53,6 @@ public sealed partial class HomeViewModel(VaultHost host, AppSettings settings, 
 
     [ObservableProperty]
     public partial bool IsEmpty { get; set; }
-
-    private string? _nextUpDocumentId;
-    private string? _nextUpBoardingPassId;
-
-    public ObservableCollection<DocumentRow> Upcoming { get; } = [];
 
     public ObservableCollection<SuggestionRow> Suggestions { get; } = [];
 
@@ -80,9 +66,10 @@ public sealed partial class HomeViewModel(VaultHost host, AppSettings settings, 
         NoFamily = family is null;
         ManyFamilies = _families.Count > 1;
         FamilyName = family?.Name ?? "";
-        Upcoming.Clear();
         Suggestions.Clear();
-        HasNextUp = false;
+        Cards.Clear();
+        HasCards = false;
+        IsEmpty = false;
         if (family is null)
         {
             return;
@@ -93,38 +80,78 @@ public sealed partial class HomeViewModel(VaultHost host, AppSettings settings, 
         var now = s.Session.Now;
         var docs = await s.Documents.ListAsync(family.Id);
 
-        if (await s.DocumentService.NextUpAsync(family.Id) is { } next)
+        // Flash cards (D66): upcoming and ongoing trips, and tickets that aren't in a trip, soonest first.
+        Cards.Clear();
+        var cards = new List<(DateTimeOffset Start, JourneyCard Card)>();
+        foreach (var trip in (await s.TripService.ListAsync(family.Id)).Where(t => t.Status(now) != TripStatus.Completed && t.StartsUtc is not null))
         {
-            HasNextUp = true;
-            _nextUpDocumentId = next.Document.Id;
-            NextUpIcon = Display.Icon(next.Document.Type);
-            NextUpTitle = Display.Route(next.Segment);
-            NextUpWhen = Display.When(next.Segment.Departs);
-            NextUpDetails = string.Join(" · ", new[]
-            {
-                next.Segment.ServiceNumber,
-                next.Document.Pnr is null ? null : "PNR " + next.Document.Pnr,
-                next.Segment.Seat is null ? null : string.Format(AppResources.Home_Seat, next.Segment.Seat),
-                Display.Travelers(next.Document, travelers),
-            }.Where(x => !string.IsNullOrWhiteSpace(x)));
-            var pass = BoardingPassLinker.LinkedTo(next.Document, docs).FirstOrDefault(p => p.BoardingPass?.SegmentId == next.Segment.Id);
-            _nextUpBoardingPassId = pass?.Id;
-            NextUpHasBoardingPass = pass is not null;
+            var dates = TripStatuses.DateRange(trip.StartsUtc!.Value.LocalDateTime, (trip.EndsUtc ?? trip.StartsUtc).Value.LocalDateTime);
+            cards.Add((trip.StartsUtc.Value, Card(trip.Trip.Id, false, trip.Trip.Name, dates, trip.Documents)));
         }
+
+        foreach (var doc in docs.Where(d => d.TripId is null && d.StartsUtc is not null
+                                            && d.Type is not (DocumentType.Visa or DocumentType.Passport or DocumentType.Other or DocumentType.BoardingPass)
+                                            && TripStatuses.Of(d.StartsUtc, d.EndsUtc, now) != TripStatus.Completed))
+        {
+            cards.Add((doc.StartsUtc!.Value, Card(doc.Id, true, doc.Title, Display.When(doc.Segments.FirstOrDefault()?.Departs), [doc])));
+        }
+
+        foreach (var (_, card) in cards.OrderBy(c => c.Start))
+        {
+            Cards.Add(card);
+        }
+
+        HasCards = Cards.Count > 0;
 
         foreach (var suggestion in await s.TripService.SuggestionsAsync(family.Id))
         {
             Suggestions.Add(new SuggestionRow(suggestion, string.Format(AppResources.Home_SuggestTrip, suggestion.DocumentIds.Count, suggestion.Name)));
         }
 
-        foreach (var doc in docs.Where(d => d.EndsUtc is { } end && end > now.AddHours(-6) && d.Type != DocumentType.BoardingPass).Take(30))
-        {
-            Upcoming.Add(Display.Row(doc, travelers, now));
-        }
-
-        IsEmpty = docs.Count == 0;
+        IsEmpty = !HasCards;
         await UpdateSyncStatusAsync(family.Id);
+
+        // The card shows the next journey that hasn't arrived yet (or the last one, if all are under way).
+        JourneyCard Card(string id, bool isDocument, string name, string dates, IReadOnlyList<TravelDocument> members)
+        {
+            var legs = members.SelectMany(d => d.Segments.Select(seg => (Doc: d, Seg: seg))).Where(x => x.Seg.DepartsUtc is not null).OrderBy(x => x.Seg.DepartsUtc).ToList();
+            var next = legs.FirstOrDefault(x => (x.Seg.ArrivesUtc ?? x.Seg.DepartsUtc) > now);
+            if (next.Seg is null && legs.Count > 0)
+            {
+                next = legs[^1];
+            }
+
+            var journeys = members.Count(d => d.Type is DocumentType.Flight or DocumentType.Train or DocumentType.Bus);
+            var count = journeys switch
+            {
+                0 => "",
+                1 => AppResources.Home_OneJourney,
+                _ => string.Format(AppResources.Home_Journeys, journeys),
+            };
+            if (next.Seg is not { } seg)
+            {
+                return new JourneyCard(id, isDocument, name, dates, count, Display.Icon(members[0].Type), "", "", "", "");
+            }
+
+            var details = string.Join(" · ", new[]
+            {
+                seg.ServiceNumber,
+                seg.Seat is null ? null : string.Format(AppResources.Home_Seat, seg.Seat),
+                next.Doc.Pnr is null ? null : "PNR " + next.Doc.Pnr,
+                Display.Travelers(next.Doc, travelers),
+            }.Where(x => !string.IsNullOrWhiteSpace(x)));
+            return new JourneyCard(id, isDocument, name, isDocument ? "" : dates, count, Display.Icon(next.Doc.Type),
+                isDocument ? "" : AppResources.Home_NextJourney, Display.Route(seg), Display.When(seg.Departs), details);
+        }
     }
+
+    public ObservableCollection<JourneyCard> Cards { get; } = [];
+
+    [ObservableProperty]
+    public partial bool HasCards { get; set; }
+
+    [RelayCommand]
+    private Task OpenCardAsync(JourneyCard card) => card.IsDocument ? Nav.DocumentAsync(card.Id) : Nav.GoAsync($"trip?id={card.Id}");
 
     private async Task UpdateSyncStatusAsync(string familyId)
     {
@@ -185,74 +212,11 @@ public sealed partial class HomeViewModel(VaultHost host, AppSettings settings, 
     private Task JoinFamilyAsync() => Nav.GoAsync("join");
 
     [RelayCommand]
-    private async Task AddAsync()
+    private Task AddAsync()
     {
-        var choice = await dialogs.ChooseAsync(AppResources.Add_Title, AppResources.Add_Camera, AppResources.Add_Photo, AppResources.Add_File, AppResources.Add_Paste);
-        try
-        {
-            if (choice == AppResources.Add_Camera)
-            {
-                if (await MediaPicker.Default.CapturePhotoAsync() is { } photo)
-                {
-                    await ImportFileAsync(photo);
-                }
-            }
-            else if (choice == AppResources.Add_Photo)
-            {
-                foreach (var picked in await MediaPicker.Default.PickPhotosAsync(new MediaPickerOptions { SelectionLimit = 10 }) ?? [])
-                {
-                    await ImportFileAsync(picked);
-                }
-            }
-            else if (choice == AppResources.Add_File)
-            {
-                var files = await FilePicker.Default.PickMultipleAsync(new PickOptions
-                {
-                    PickerTitle = AppResources.Add_File,
-                    FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>> { [DevicePlatform.Android] = ["application/pdf", "image/*", "text/plain"] }),
-                });
-                foreach (var file in files ?? [])
-                {
-                    if (file is not null)
-                    {
-                        await ImportFileAsync(file);
-                    }
-                }
-            }
-            else if (choice == AppResources.Add_Paste)
-            {
-                var text = await Clipboard.Default.GetTextAsync();
-                if (string.IsNullOrWhiteSpace(text))
-                {
-                    await dialogs.AlertAsync(AppResources.Add_Title, AppResources.Add_ClipboardEmpty);
-                    return;
-                }
-
-                await importer.ImportAsync(System.Text.Encoding.UTF8.GetBytes(text), null);
-            }
-        }
-        catch (PermissionException)
-        {
-            await dialogs.AlertAsync(AppResources.Add_Title, AppResources.Add_NoPermission);
-        }
+        importer.PendingTripId = null; // a ticket added from Home starts on its own; the app then asks about the return
+        return importer.AddAsync();
     }
-
-    private async Task ImportFileAsync(FileResult file)
-    {
-        await using var stream = await file.OpenReadAsync();
-        using var buffer = new MemoryStream();
-        await stream.CopyToAsync(buffer);
-        await importer.ImportAsync(buffer.ToArray(), file.FileName);
-    }
-
-    [RelayCommand]
-    private Task OpenNextUpAsync() => _nextUpDocumentId is null ? Task.CompletedTask : Nav.DocumentAsync(_nextUpDocumentId);
-
-    [RelayCommand]
-    private Task OpenBoardingPassAsync() => _nextUpBoardingPassId is null ? Task.CompletedTask : Nav.GoAsync($"viewer?id={_nextUpBoardingPassId}&barcode=1");
-
-    [RelayCommand]
-    private Task OpenAsync(DocumentRow row) => Nav.DocumentAsync(row.Id);
 
     [RelayCommand]
     private async Task ConfirmSuggestionAsync(SuggestionRow row)

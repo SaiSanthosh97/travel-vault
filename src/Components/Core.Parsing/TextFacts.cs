@@ -298,9 +298,18 @@ public sealed partial class TextFacts
             }
         }
 
-        return found
-            .DistinctBy(n => string.Join(' ', n.ToUpperInvariant().Split(' ', StringSplitOptions.RemoveEmptyEntries).Order()))
+        var distinct = found
+            .DistinctBy(n => string.Join(' ', NameWords(n).Order()))
             .ToList();
+
+        // A table cell that wraps ("Mr SAI SANTHOSH" / "MEDAM LAXMINARAYANA") yields parts of a name printed whole elsewhere.
+        return distinct.Where(n => !distinct.Any(other => other != n && IsPartOf(NameWords(n), NameWords(other)))).ToList();
+
+        static List<string> NameWords(string name) =>
+            name.ToUpperInvariant().Split(' ', StringSplitOptions.RemoveEmptyEntries).Where(t => !IsTitle(t)).ToList();
+
+        static bool IsPartOf(List<string> part, List<string> whole) =>
+            part.Count < whole.Count && Enumerable.Range(0, whole.Count - part.Count + 1).Any(i => whole.Skip(i).Take(part.Count).SequenceEqual(part));
     }
 
     internal static string? CleanName(string raw)
@@ -365,7 +374,7 @@ public sealed partial class TextFacts
             {
                 foreach (Match m in regex.Matches(line))
                 {
-                    if (Overlaps(used, m.Index, m.Length) || ToDate(m, kind) is not { } d)
+                    if (Overlaps(used, m.Index, m.Length) || ToDate(m, kind, line) is not { } d)
                     {
                         continue;
                     }
@@ -430,8 +439,10 @@ public sealed partial class TextFacts
         return mentions;
     }
 
-    private (DateOnly Date, bool Ambiguous)? ToDate(Match m, int kind)
+    private (DateOnly Date, bool Ambiguous)? ToDate(Match m, int kind, string line)
     {
+        // A weekday printed just before the date ("Wed, Oct 7") tells the year when none is printed.
+        var weekday = WeekdayBefore().Match(line[..m.Index]) is { Success: true } w ? Weekdays[w.Groups[1].Value[..3].ToLowerInvariant()] : (DayOfWeek?)null;
         try
         {
             switch (kind)
@@ -476,6 +487,19 @@ public sealed partial class TextFacts
             if (candidate < Reference.AddDays(-60))
             {
                 candidate = candidate.AddYears(1);
+            }
+
+            if (weekday is { } dow && candidate.DayOfWeek != dow)
+            {
+                // The nearest year (around the guess) on which this date falls on the printed weekday.
+                foreach (var shift in new[] { -1, 1, -2, 2 })
+                {
+                    var year = candidate.Year + shift;
+                    if (day <= DateTime.DaysInMonth(year, month) && new DateOnly(year, month, day) is var other && other.DayOfWeek == dow)
+                    {
+                        return (other, false);
+                    }
+                }
             }
 
             return (candidate, false);
@@ -530,6 +554,15 @@ public sealed partial class TextFacts
 
     private const string MonthNames = "jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|sept?(?:ember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?";
 
+    private static readonly Dictionary<string, DayOfWeek> Weekdays = new()
+    {
+        ["mon"] = DayOfWeek.Monday, ["tue"] = DayOfWeek.Tuesday, ["wed"] = DayOfWeek.Wednesday, ["thu"] = DayOfWeek.Thursday,
+        ["fri"] = DayOfWeek.Friday, ["sat"] = DayOfWeek.Saturday, ["sun"] = DayOfWeek.Sunday,
+    };
+
+    [GeneratedRegex(@"\b(mon|tue|wed|thu|fri|sat|sun)[a-z]*\.?,?\s*$", RegexOptions.IgnoreCase)]
+    private static partial Regex WeekdayBefore();
+
     [GeneratedRegex(@"(?<!\d)(\d{4})-(\d{2})-(\d{2})(?!\d)")]
     private static partial Regex Iso();
 
@@ -551,7 +584,7 @@ public sealed partial class TextFacts
     [GeneratedRegex(@"(?<![\d:.])(?<h>[01]\d|2[0-3])(?<m>[0-5]\d)\s*hrs?\b", RegexOptions.IgnoreCase)]
     private static partial Regex TimeHrs();
 
-    [GeneratedRegex(@"^(?:(?:lead\s+)?(?:passenger|traveller|traveler|guest|attendee|ticket\s*holder|holder)s?(?:\s*names?)?(?:\s*details)?|name\s+of\s+(?:passenger|guest)|passenger\s+name|(?:full\s+)?name(?=\s*[:\-]))\b\s*(?:\(s\))?\s*[:\-–]?\s*(?<v>.*)$", RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"^(?:(?:lead\s+)?(?:passenger|traveller|traveler|guest|attendee|ticket\s*holder|holder)s?(?:\s*names?)?(?:\s*details)?|name\s+of\s+(?:passenger|guest)|passenger\s+name|(?:full\s+)?name(?=\s*[:\-]))\b\s*(?:\(s\))?(?:\s*[:\-–]\s*|\s{2,}|\s*$)(?<v>.*)$", RegexOptions.IgnoreCase)]
     private static partial Regex LabelForNames();
 
     [GeneratedRegex(@"^\s*(?:\d+[.)]\s*)?(?:mr|mrs|ms|miss|mstr|master|dr|shri|smt)\.?\s+[a-z]", RegexOptions.IgnoreCase)]

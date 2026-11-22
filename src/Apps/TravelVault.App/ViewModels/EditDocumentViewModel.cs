@@ -48,11 +48,17 @@ public sealed partial class SegmentEdit : ObservableObject
     [ObservableProperty]
     public partial string Seat { get; set; } = "";
 
-    public bool HasDestination => Original.Mode is TravelMode.Flight or TravelMode.Train or TravelMode.Bus or TravelMode.Other;
+    /// <summary>Follows the document type chosen on the form (a ticket read as a train can be changed to a flight).</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasDestination))]
+    public partial TravelMode Mode { get; set; }
+
+    public bool HasDestination => Mode is TravelMode.Flight or TravelMode.Train or TravelMode.Bus or TravelMode.Other;
 
     public static SegmentEdit From(Segment s) => new()
     {
         Original = s,
+        Mode = s.Mode,
         FromName = s.From.City ?? s.From.Name,
         FromCode = s.From.Code ?? "",
         ToName = s.To?.City ?? s.To?.Name ?? "",
@@ -70,14 +76,16 @@ public sealed partial class SegmentEdit : ObservableObject
     {
         var from = PlaceFor(FromName, FromCode, Original.From);
         var to = HasDestination && (ToName.Length > 0 || ToCode.Length > 0) ? PlaceFor(ToName, ToCode, Original.To) : Original.To;
+        var departs = DepartDate.Date + DepartTime;
+        var arrives = ArriveDate.Date + ArriveTime;
         return new Segment
         {
             Id = Original.Id,
-            Mode = Original.Mode,
+            Mode = Mode,
             From = from,
-            To = to,
-            Departs = new LocalDateTimeZ(DepartDate.Date + DepartTime, from.TimeZoneId),
-            Arrives = HasArrival ? new LocalDateTimeZ(ArriveDate.Date + ArriveTime, (to ?? from).TimeZoneId) : null,
+            To = HasDestination ? to : null,
+            Departs = new LocalDateTimeZ(departs, from.TimeZoneId),
+            Arrives = HasArrival && arrives != departs ? new LocalDateTimeZ(arrives, (to ?? from).TimeZoneId) : null, // untouched = not given
             CarrierCode = Original.CarrierCode,
             ServiceNumber = Blank(ServiceNumber),
             ServiceName = Blank(ServiceNumber) == Original.ServiceNumber ? Original.ServiceName : null,
@@ -185,6 +193,17 @@ public sealed partial class EditDocumentViewModel(VaultHost host, Dialogs dialog
         };
         Segments.Add(SegmentEdit.From(new Segment { Id = Ids.New(), Mode = mode, From = new Place("") }));
     }
+
+    /// <summary>The kind of leg a document type has: a flight ticket has flights, a hotel booking a stay.</summary>
+    public static TravelMode ModeFor(DocumentType type) => type switch
+    {
+        DocumentType.Flight or DocumentType.BoardingPass => TravelMode.Flight,
+        DocumentType.Train => TravelMode.Train,
+        DocumentType.Bus => TravelMode.Bus,
+        DocumentType.Hotel => TravelMode.Stay,
+        DocumentType.Event => TravelMode.Event,
+        _ => TravelMode.Other,
+    };
 
     [RelayCommand]
     private void RemoveLeg(SegmentEdit leg) => Segments.Remove(leg);

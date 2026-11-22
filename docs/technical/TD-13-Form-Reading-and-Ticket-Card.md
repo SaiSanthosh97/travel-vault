@@ -70,6 +70,38 @@ Then, for labels that do have a value:
     - `RAC/S2/7` → "RAC · Coach S2 · Berth 7"
     - chair-car coaches (C/D/E) say "Seat" instead of "Berth"
   - **Details:** Status, a line per passenger, Quota, Distance, Booked from (only if it differs), Transaction ID, Booked on.
+- **RailOne app screen (screenshot), C-026** (`TravelDocumentParser.AppCard.cs`). Nothing on it is labelled:
+  ```
+  20704                                   PNR
+  KCG VANDE BHARAT                        4245374521
+  14:45 Mon, 5 Oct 26   — 4h:38m —   Mon, 5 Oct 26 19:23
+  YESVANTPUR JN.                          KURNOOL CITY
+  YPR                                     KRNT
+  1 Adult, 0 Child | CC | GENERAL | YESVANTPUR...
+  NAME SURNAME        Booking Status   Current Status
+  Male | 73           CNF/C2/17/NC     CNF/C2/17/NC
+  ```
+  Used only when no labelled From/To was found:
+  - **Anchor:** a row whose first and last cells are both bare station codes. Left = from, right = to; the split is the midpoint between the two codes.
+  - **Names** are the row above, one per side. **Times and dates** are up to three rows above that, left side = departure, right side = arrival. The "4h:38m" cell is the journey length.
+  - If one end lost its time (OCR missed the large "14:45" and read "5 Oct" as "S Oct" = 26 Oct), that end is **worked out from the other end and the journey length**. The complete end wins over a date that has no time beside it.
+  - **Train:** a 5-digit cell above the times, with the name in the cell directly below it.
+  - **Summary line:** "| CC | GENERAL |" gives class (→ "Chair car (CC)") and quota. OCR often reads "|" as "I", so both split.
+  - **Passengers:** each row holding a status code; the name is the row's first cell or the first cell of the row above. The last status on the row is the current one.
+- **Flight legs as cards, C-029** (`FlightCards`, MakeMyTrip-style e-tickets):
+  ```
+  Etihad Airways   Bengaluru         ··· 03 h 55 m ···       Abu Dhabi
+  EY 233           BLR 04:35 hrs                       07:00 hrs AUH
+                   Wed, Oct 7                             Wed, Oct 7
+  ```
+  - **Ends:** cells that are exactly one known airport code plus a time ("BLR 04:35 hrs", "07:00 hrs AUH").
+  - **Pairing:** each end goes with the nearest unpaired end on the other side, within two rows. Left = departure. The rows can differ: "London - Heathrow / Apt" wraps and pushes the arrival a row up.
+  - **Dates:** the nearest date in the same column, in the next three rows. An arrival without its own date takes the departure's date, plus one day if it is earlier.
+  - **Flight number:** a cell left of the departure, within two rows, with a known airline code.
+  - The cards replace the text rules when they find at least as many legs. On this ticket the text rules found one wrong leg (BLR → LHR at 15:05, the London arrival time).
+  - **Year from the weekday:** "Wed, Oct 7" has no year. The weekday picks it (the nearest year around the usual guess on which 7 Oct is a Wednesday), so a ticket imported months after the trip keeps the right year.
+  - **Booking ID:** travel-site IDs are 15–24 letters and digits ("NN…02"), longer than airline or rail codes. They are read right after "Booking ID" before the general code rule, which used to fall through to the e-ticket number.
+  - **Names:** a name label must have a colon, stand alone, or head a column (2+ spaces). "travellers must present…" is a sentence. A name that is part of a longer name found elsewhere (a wrapped table cell) is dropped.
 - **Dates and times under separate labels** (`DateAndTime`): "Journey Date: 18/01/2027" + "Departure Time: 22:00". An **explicitly labelled time beats a time that only shares the date's line**: on an IndiGo boarding pass the first time after the date is the *boarding* time (13:55), not the departure (14:40). An arrival that prints only a time inherits the departure's date, plus one day if it is earlier ("dropping 06:30").
 - **Flights:** if no airport codes are printed, labelled From/To city names are looked up in the airport list (Dibrugarh → DIB, Kolkata → CCU). Details: Status, Terminal, Gate, Boarding time, E-ticket.
 - **Bus:** a route heading "Bengaluru → Hyderabad" is preferred over a boarding-point label whose value couldn't be placed. Details: bus type, boarding point (or its "Location"), landmark, reporting time, dropping point.
@@ -97,7 +129,9 @@ Trip · Files ·  Edit / Share / Save to phone · Private · Delete
 ```
 - The travel time is computed in UTC when both ends have a time zone (a flight Bengaluru → Dubai), otherwise from the printed local times.
 - Stays show Check-in / Check-out with "3 nights" in the middle. Events show only the start.
-- Low-confidence values stay **orange** (FR-D6), now on the strip too.
+- **Replaced by C-030 (TD-14):** every ticket is now confirmed on a form before saving, so nothing is orange any more. What follows is the earlier behaviour.
+- Low-confidence values stay **orange** (FR-D6) on the strip. The stations, times and passengers can't be coloured, so the warning above the card **names what to check** ("Please check the journey, passengers…"). If no journey was read at all, it says so instead (C-027). Before, it said "values in orange…" with nothing orange on screen.
+- Chair-car and second-sitting coaches (C…, D…, E…, or class CC/EC/EA/2S) show **SEAT** in the strip instead of BERTH.
 - Passenger statuses are matched to travelers by the **name as printed** (`DocumentPassenger.RawName` = `DocumentDetail.Label`).
 
 ## Key decisions
@@ -148,7 +182,17 @@ The card rendered as designed. Three findings, all dealt with:
 - **The strip wrapped unevenly** (PNR + Coach, then Berth + Class). It is now a fixed two-per-row grid.
 - **"Not responding" on a cold start** happened only while the emulator was out of memory: 2.4 of 2.5 GB used, 84 % kernel CPU from swapping, and another app on the same emulator also stopped responding. With 4 GB it did not happen. A share sent from `adb shell` doesn't reach the app, because the shell can't grant read access to a media file the way WhatsApp does. That is a test-harness limit; sharing from apps works on the phone.
 
+### RailOne screenshot (C-026, 2026-11-18)
+The user's real RailOne screenshot (kept in the git-ignored `samples/real`) was first run through Windows OCR on the PC, which gives word boxes like ML Kit. In v0.1.2 it found only the PNR and transaction ID, and no journey: the screen has no From/To labels. After the app-card rule:
+- **On the PC (Windows OCR):** everything was read, including the departure that OCR missed (worked out from the arrival and "4h:38m").
+- **On the emulator (the app's real ML Kit path, + → Choose a file):** Yesvantpur (YPR) 14:45 → Kurnool (KRNT) 19:23 on 5 Oct 2026, 20704 KCG Vande Bharat, Confirmed, PNR, coach C2 seat 17, class CC, quota General, transaction ID, booked on. No warning. The ticket is listed under Trips → Completed.
+- **Finding:** the strip said "BERTH 17" on a chair car. It now says SEAT.
+
+`RailAppCardTests` replays the screenshot's word positions (`samples/synthetic/railone-app-card.words.tsv`, all names and numbers made up, plus a second passenger) through `ContentExtractor` → parser. It also checks the OCR-misread variant and the summary-line variants.
+
 ## Interview Q&A
+- **How do you read a screen that has no labels at all?** Find an anchor whose meaning is unambiguous: two station codes on one row, left and right. Everything else is located relative to it: names directly above, times above those, the train number above the times. The left/right split is the midpoint between the two codes.
+- **What if OCR misreads part of it?** Use redundancy on the page: the journey length links the two ends, so a missing departure time is worked out from the arrival and the length.
 - **Why did plain-text parsing fail on the RailOne ticket?** The slip prints labels on one row and values on the next. A text extractor outputs "PNR: Train No./Name: Class:" then "1234567890 20824/… Sleeper Class", so "the text after PNR:" is another label. The relation is spatial, so the fix had to be spatial.
 - **How do you decide which column a value belongs to?** Split the row at the midpoints between neighbouring labels and put each value cell where its centre falls. Edge columns extend by the label's width. It tolerates values that are wider or offset.
 - **How do you avoid reading sentences as labels?** Weak labels need a colon, a cell of their own, or a run of labels. A phrase that merely starts with "to"/"from" is text, and more than six words after a colon-less label is a sentence.
@@ -157,6 +201,6 @@ The card rendered as designed. Three findings, all dealt with:
 - **Why not use AI?** D34: free, offline and private. A layout-aware rules engine covers India's handful of ticket formats exactly, explains itself, and is unit-tested.
 
 ## Possible improvements
-- A real RailOne screenshot or PDF in `samples/real` (git-ignored) to confirm the in-app layout. None was available online.
+- A real RailOne **PDF** (the e-ticket download, as opposed to the app screen) in `samples/real` to confirm that layout too. The app screen is confirmed (C-026).
 - Multi-leg tables (one row per flight under one header).
 - Translating detail labels when the UI gets more languages.
